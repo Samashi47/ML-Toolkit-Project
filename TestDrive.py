@@ -3,6 +3,8 @@ import tkinter.messagebox
 from tkinter.filedialog import askopenfilename
 import customtkinter as ctk
 import customMenu
+import pandas as pd
+from tksheet import Sheet
 
 ctk.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 ctk.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -12,18 +14,24 @@ class StartFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
         # configure grid layout (4x4)
         
+        global app
+        
         ctk.CTkFrame.__init__(self, parent)
         self.import_frame = ctk.CTkFrame(self, width=self.winfo_width(), height=self.winfo_height(), corner_radius=0, fg_color="#200E3A")
-        self.path = tk.StringVar()
-        self.import_entry = ctk.CTkEntry(self,width=800,height=30, textvariable=self.path)
+        # import entry
+        self.import_entry = ctk.CTkEntry(self,width=800,height=30, textvariable= self.retPath())
         self.import_entry.configure(fg_color="#200E3A")
         self.import_entry.place(relx=0.5, rely=0.4, anchor="center")
-        
-        self.import_button = ctk.CTkButton(self,width=400,height=50, text="Import File",command=lambda:self.browser())
+        #import button
+        self.import_button = ctk.CTkButton(self,width=400,height=50, text="Import File",command=lambda:self.getCSV_wrapper())
         self.import_button.configure(fg_color="#200E3A")
         self.import_button.place(relx=0.5, rely=0.5, anchor="center")
-        print(str(self.path.get()))
-
+        # Show File button
+        self.show_file_button = ctk.CTkButton(self,width=400,height=50, text="Show File",command=lambda:controller.show_frame(PrePFrame))
+        self.show_file_button.configure(fg_color="#200E3A")
+        self.show_file_button.place(relx=0.5, rely=0.7, anchor="center")
+        
+        
     def browser(self):
         name = askopenfilename()
         if name:
@@ -39,20 +47,70 @@ class StartFrame(ctk.CTkFrame):
         new_scaling_float = int(new_scaling.replace("%", "")) / 100
         ctk.set_widget_scaling(new_scaling_float)
 
+    def getCSV_wrapper(self):
+        global app
+        app.frames[PrePFrame].getCSV()
+    
+    def show_wrapper(self):
+        global app
+        app.frames[PrePFrame].show()
+    
+    def retPath(self):
+        global app
+        return app.frames[PrePFrame].path.get()
 
 class PrePFrame(ctk.CTkFrame):
-    #class PCAFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
         ctk.CTkFrame.__init__(self, parent)
-        # create checkbox and switch frame
-        # self.checkbox_slider_frame = ctk.CTkFrame(self, width=1100, height=50, corner_radius=0, fg_color="#200E3A")
-        # self.checkbox_slider_frame.grid(row=1, column=3, sticky="nsew")
-        # self.checkbox_1 = ctk.CTkCheckBox(master=self.checkbox_slider_frame)
-        # self.checkbox_1.grid(row=1, column=0, pady=(20, 0), padx=20, sticky="n")
-        # self.checkbox_2 = ctk.CTkCheckBox(master=self.checkbox_slider_frame)
-        # self.checkbox_2.grid(row=2, column=0, pady=(20, 0), padx=20, sticky="n")
-        # self.checkbox_3 = ctk.CTkCheckBox(master=self.checkbox_slider_frame)
-        # self.checkbox_3.grid(row=3, column=0, pady=20, padx=20, sticky="n")
+        self.path = str()
+        self.data_frame = ctk.CTkFrame(self, width=self.winfo_width(), height=self.winfo_height(), corner_radius=0, fg_color="#200E3A")
+        
+        label_1 = ctk.CTkLabel(self)
+        label_1.configure(font=('Arial',12), justify='center', text='PREDIKSI IHSG BBCA.JK')
+        label_1.pack(side='top')
+        button_1 = ctk.CTkButton(self)
+        button_1.configure(text='Import File', command=lambda: self.getCSV())
+        button_1.place(relx='0.14', rely='0.66', anchor="center")
+        button_2 = ctk.CTkButton(self)
+        button_2.configure(text='Show File', command=lambda: self.show())
+        button_2.place(relx='0.55', rely='0.66', anchor="center")
+
+        # Frame to hold DataFrame
+        self.df_frame = ctk.CTkFrame(self,height=200, width=200)
+        self.df_frame.pack(side='top', pady=10)
+
+        self.df = None  # Initialize df as an instance variable
+
+    def getCSV(self):
+        global app
+        self.path = tk.filedialog.askopenfilename()
+        if self.path.endswith('.csv'):
+            self.df = pd.read_csv(self.path)
+        elif self.path.endswith(('.xls', '.xlsx')):
+            self.df = pd.read_excel(self.path)
+        else:
+            print("Unsupported file format. Please select a CSV or Excel file.")
+        if str(self.path.get()) != "":
+            self.succes_label = ctk.CTkLabel(app.frames[StartFrame],width=400,height=50, text="File imported successfully!")
+            self.succes_label.place(relx=0.5, rely=0.6, anchor="center")
+
+
+    def show(self):
+        if self.df is None:
+            print("Please import a file first.")
+            return
+
+        # Clear previous DataFrame display
+        for widget in self.df_frame.winfo_children():
+            widget.destroy()
+
+        # Display DataFrame using tksheet
+        sheet = Sheet(self.df_frame)
+        sheet.enable_bindings()
+        sheet.grid(row=0, column=0, sticky="nswe")
+
+        # Insert data
+        sheet.set_sheet_data(self.df.values.tolist())
     
 
 
@@ -60,7 +118,6 @@ class App(ctk.CTk):
     def __init__(self, *args, **kwargs):
         ctk.CTk.__init__(self, *args, **kwargs)
         
-        global app
         self.title("ML Toolkit")
         
         self.geometry(f"{1100}x{580}")
@@ -70,7 +127,7 @@ class App(ctk.CTk):
         menu = customMenu.Menu(self)
 
         file_menu = menu.menu_bar(text="File", tearoff=0)
-        file_menu.add_command(label="Open",command=lambda:self.browser())
+        file_menu.add_command(label="Open",command=lambda:self.frames[StartFrame].browser())
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.quit)
         
@@ -129,6 +186,5 @@ class App(ctk.CTk):
         print(val)
 
 
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+app = App()
+app.mainloop()
