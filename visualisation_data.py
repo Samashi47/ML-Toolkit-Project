@@ -106,20 +106,86 @@ class FileImporterApp:
 
         if plot_type == "line":
             for feature in features:
-                # Convert the y-axis data to numeric values
                 y_data = pd.to_numeric(self.file_data[feature], errors='coerce')
-
                 plt.plot(self.file_data.index, y_data, label=feature)
 
             plt.xlabel("Index")
             plt.ylabel("Values")
             plt.title("Line Plot of Features")
-
-            # Add a legend only if labels are provided
             if any(feature for feature in features if feature):
                 plt.legend()
 
-        # Add conditions for other plot types
+        elif plot_type == "scatter":
+            for feature in features:
+                x_data = self.file_data.index
+                y_data = pd.to_numeric(self.file_data[feature], errors='coerce')
+                plt.scatter(x_data, y_data, label=feature)
+
+            plt.xlabel("Index")
+            plt.ylabel("Values")
+            plt.title("Scatter Plot of Features")
+            if any(feature for feature in features if feature):
+                plt.legend()
+
+        elif plot_type == "bar":
+            for feature in features:
+                x_data = self.file_data.index
+                y_data = pd.to_numeric(self.file_data[feature], errors='coerce')
+                plt.bar(x_data, y_data, label=feature)
+
+            plt.xlabel("Index")
+            plt.ylabel("Values")
+            plt.title("Bar Plot of Features")
+            if any(feature for feature in features if feature):
+                plt.legend()
+
+        elif plot_type == "histogram":
+            for feature in features:
+                y_data = pd.to_numeric(self.file_data[feature], errors='coerce')
+                plt.hist(y_data, label=feature, alpha=0.7)
+
+            plt.xlabel("Values")
+            plt.ylabel("Frequency")
+            plt.title("Histogram of Features")
+            if any(feature for feature in features if feature):
+                plt.legend()
+
+        elif plot_type == "boxplot":
+            data_to_plot = [pd.to_numeric(self.file_data[feature], errors='coerce') for feature in features]
+            plt.boxplot(data_to_plot, labels=features)
+            plt.ylabel("Values")
+            plt.title("Boxplot of Features")
+
+        elif plot_type == "pie":
+            for feature in features:
+                y_data = pd.to_numeric(self.file_data[feature], errors='coerce')
+                plt.pie(y_data, labels=self.file_data.index, autopct='%1.1f%%', startangle=90)
+                plt.title(f"Pie Chart of {feature}")
+
+        elif plot_type == "area":
+            for feature in features:
+                y_data = pd.to_numeric(self.file_data[feature], errors='coerce')
+                plt.fill_between(self.file_data.index, y_data, label=feature, alpha=0.5)
+
+            plt.xlabel("Index")
+            plt.ylabel("Values")
+            plt.title("Area Plot of Features")
+            if any(feature for feature in features if feature):
+                plt.legend()
+
+        elif plot_type == "violin":
+            data_to_plot = [pd.to_numeric(self.file_data[feature], errors='coerce') for feature in features]
+            plt.violinplot(data_to_plot, showmeans=True)
+            plt.xticks(range(1, len(features) + 1), features)
+            plt.ylabel("Values")
+            plt.title("Violin Plot of Features")
+
+        elif plot_type == "heatmap":
+            plt.imshow(self.file_data[features].T, cmap='viridis', aspect='auto', interpolation='none')
+            plt.colorbar()
+            plt.xlabel("Index")
+            plt.yticks(range(len(features)), features)
+            plt.title("Heatmap of Features")
 
         plt.tight_layout()
 
