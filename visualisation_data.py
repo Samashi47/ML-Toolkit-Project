@@ -139,16 +139,15 @@ class FileImporterApp:
             if any(feature for feature in features if feature):
                 plt.legend()
 
+
         elif plot_type == "histogram":
+
             for feature in features:
                 y_data = pd.to_numeric(self.file_data[feature], errors='coerce')
-                plt.hist(y_data, label=feature, alpha=0.7)
 
-            plt.xlabel("Values")
-            plt.ylabel("Frequency")
-            plt.title("Histogram of Features")
-            if any(feature for feature in features if feature):
-                plt.legend()
+                y_data = y_data.dropna()  # Drop NaN values
+
+                plt.hist(y_data, label=feature, alpha=0.7)
 
         elif plot_type == "boxplot":
             data_to_plot = [pd.to_numeric(self.file_data[feature], errors='coerce') for feature in features]
@@ -156,10 +155,16 @@ class FileImporterApp:
             plt.ylabel("Values")
             plt.title("Boxplot of Features")
 
+
+
         elif plot_type == "pie":
+
             for feature in features:
                 y_data = pd.to_numeric(self.file_data[feature], errors='coerce')
-                plt.pie(y_data, labels=self.file_data.index, autopct='%1.1f%%', startangle=90)
+                y_data = y_data.dropna()  # Drop NaN values
+                # Modify the labels to match the length of y_data
+                labels = self.file_data.index[:len(y_data)]
+                plt.pie(y_data, labels=labels, autopct='%1.1f%%', startangle=90)
                 plt.title(f"Pie Chart of {feature}")
 
         elif plot_type == "area":
@@ -180,19 +185,59 @@ class FileImporterApp:
             plt.ylabel("Values")
             plt.title("Violin Plot of Features")
 
+
         elif plot_type == "heatmap":
-            plt.imshow(self.file_data[features].T, cmap='viridis', aspect='auto', interpolation='none')
+
+            data_to_plot = self.file_data[features].apply(pd.to_numeric, errors='coerce')
+            plt.imshow(data_to_plot.T, cmap='viridis', aspect='auto', interpolation='none')
             plt.colorbar()
             plt.xlabel("Index")
             plt.yticks(range(len(features)), features)
             plt.title("Heatmap of Features")
 
-        plt.tight_layout()
 
+
+
+        elif plot_type == "3d":
+
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+            for feature in features:
+                x_data = self.file_data.index
+                y_data = pd.to_numeric(self.file_data[feature], errors='coerce').fillna(0)
+                ax.plot(x_data, y_data, zs=0, label=feature)
+            ax.set_xlabel("Index")
+            ax.set_ylabel("Values")
+            ax.set_zlabel("Z-axis")
+            ax.set_title("3D Plot of Features")
+            if any(feature for feature in features if feature):
+                ax.legend()
+            # Use FigureCanvasTkAgg from mpl_toolkits.mplot3d
+            canvas = FigureCanvasTkAgg(fig, master=self.plot_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        elif plot_type == "errorbars":
+
+            for feature in features:
+                x_data = self.file_data.index
+                y_data = pd.to_numeric(self.file_data[feature], errors='coerce').fillna(0)
+                error = y_data * 0.1  # Replace with your error calculation logic
+                plt.errorbar(x_data, y_data, yerr=error, label=feature)
+            plt.xlabel("Index")
+            plt.ylabel("Values")
+            plt.title("Error Bars Plot of Features")
+            if any(feature for feature in features if feature):
+                plt.legend()
+            # Use FigureCanvasTkAgg directly without creating a TkAgg backend
+            canvas = FigureCanvasTkAgg(plt.gcf(), master=self.plot_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        plt.tight_layout()
         # Clear previous plot from the frame
         for widget in self.plot_frame.winfo_children():
             widget.destroy()
-
         # Display the plot in the frame
         canvas = FigureCanvasTkAgg(plt.gcf(), master=self.plot_frame)
         canvas.draw()
