@@ -4,6 +4,7 @@ import pandas as pd
 from tksheet import Sheet
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+from imblearn.over_sampling import SMOTE
 
 class NewprojectApp:
     def __init__(self, master=None):
@@ -39,6 +40,12 @@ class NewprojectApp:
         button_7 = ttk.Button(button_frame)
         button_7.config(text='Show y_test', command=lambda: self.showDataFrame(self.y_test))
         button_7.grid(row=3, column=0, padx=5, pady=10)
+
+        button_8 = ttk.Button(button_frame)
+        button_8.config(text='Apply SMOTE', command=self.applySMOTE)
+        button_8.grid(row=3, column=1, padx=5, pady=10)
+
+
 
 
         # Frame to hold DataFrame
@@ -85,6 +92,22 @@ class NewprojectApp:
         # Insert data
         sheet.set_sheet_data(self.df.values.tolist())
 
+    def showDataFrame(self, data):
+        if data is None or (isinstance(data, pd.DataFrame) and data.empty):
+            print("No data to display.")
+            return
+        # Clear previous DataFrame display
+        for widget in self.df_frame.winfo_children():
+            widget.destroy()
+
+        # Display DataFrame using tksheet
+        if isinstance(data, pd.Series):
+            data = data.to_frame()
+
+        sheet = Sheet(self.df_frame, data=data.values.tolist(), headers=data.columns.tolist())
+        sheet.enable_bindings()
+        sheet.grid(row=0, column=0, sticky="nswe")
+        
     def splitData(self):
         if self.df is None:
             print("Please import a file first.")
@@ -112,23 +135,22 @@ class NewprojectApp:
         print("y_train shape:", self.y_train.shape)
         print("y_test shape:", self.y_test.shape)
 
-    def showDataFrame(self, data):
-        if data is None or (isinstance(data, pd.DataFrame) and data.empty):
-            print("No data to display.")
+        
+    def applySMOTE(self):
+        if self.X_train is None or self.y_train is None:
+            print("Please import and split data first.")
             return
 
-        # Clear previous DataFrame display
-        for widget in self.df_frame.winfo_children():
-            widget.destroy()
+        # Apply SMOTE to balance the classes
+        smote = SMOTE(sampling_strategy=0.5,random_state=42)
+        X_train_resampled, y_train_resampled = smote.fit_resample(self.X_train, self.y_train)
 
-        # Display DataFrame using tksheet
-        if isinstance(data, pd.Series):
-            data = data.to_frame()
-
-        sheet = Sheet(self.df_frame, data=data.values.tolist(), headers=data.columns.tolist())
-        sheet.enable_bindings()
-        sheet.grid(row=0, column=0, sticky="nswe")
-
+        # Update X_train and y_train with resampled data
+        self.X_train = pd.DataFrame(X_train_resampled, columns=self.X_train.columns)
+        self.y_train = pd.Series(y_train_resampled, name=self.y_train.name)
+        print("Shape of X_train after SMOTE is :", self.X_train.shape)
+        print("Shape of y_train after SMOTE is :", self.y_train.shape)
+        print("SMOTE applied successfully.")
 
 
 if __name__ == '__main__':
