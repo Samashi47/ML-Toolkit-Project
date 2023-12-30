@@ -1,6 +1,5 @@
 import tkinter as tk
 import tkinter.messagebox
-from tkinter.filedialog import askopenfilename
 import customtkinter as ctk
 import customMenu
 import pandas as pd
@@ -13,32 +12,22 @@ ctk.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", 
 class StartFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
         # configure grid layout (4x4)
-        
-        global app
-        
+        self.controller = controller
         ctk.CTkFrame.__init__(self, parent)
+        self.path = tk.StringVar()
         self.import_frame = ctk.CTkFrame(self, width=self.winfo_width(), height=self.winfo_height(), corner_radius=0, fg_color="#200E3A")
         # import entry
-        self.import_entry = ctk.CTkEntry(self,width=800,height=30, textvariable= self.retPath())
-        self.import_entry.configure(fg_color="#200E3A")
+        self.import_entry = ctk.CTkEntry(self,width=800,height=30,textvariable=self.path)
+        self.import_entry.configure(fg_color="#200E3A",state="disabled",)
         self.import_entry.place(relx=0.5, rely=0.4, anchor="center")
         #import button
-        self.import_button = ctk.CTkButton(self,width=400,height=50, text="Import File",command=lambda:self.getCSV_wrapper())
+        self.import_button = ctk.CTkButton(self,width=400,height=50, text="Import",command=lambda:self.getCSV_wrapper())
         self.import_button.configure(fg_color="#200E3A")
         self.import_button.place(relx=0.5, rely=0.5, anchor="center")
         # Show File button
-        self.show_file_button = ctk.CTkButton(self,width=400,height=50, text="Show File",command=lambda:controller.show_frame(PrePFrame))
+        self.show_file_button = ctk.CTkButton(self,width=400,height=50, text="Show File",command=lambda:self.controller.show_frame(PrePFrame))
         self.show_file_button.configure(fg_color="#200E3A")
-        self.show_file_button.place(relx=0.5, rely=0.7, anchor="center")
-        
-        
-    def browser(self):
-        name = askopenfilename()
-        if name:
-            self.path.set(name)
-        if str(self.path.get()) != "":
-            self.succes_label = ctk.CTkLabel(self,width=400,height=50, text="File imported successfully!")
-            self.succes_label.place(relx=0.5, rely=0.6, anchor="center")
+        self.show_file_button.place(relx=0.5, rely=0.6, anchor="center")
                
     def change_appearance_mode_event(self, new_appearance_mode: str):
         ctk.set_appearance_mode(new_appearance_mode)
@@ -48,53 +37,54 @@ class StartFrame(ctk.CTkFrame):
         ctk.set_widget_scaling(new_scaling_float)
 
     def getCSV_wrapper(self):
-        global app
-        app.frames[PrePFrame].getCSV()
+        self.controller.frames[PrePFrame].getCSV()
     
     def show_wrapper(self):
-        global app
-        app.frames[PrePFrame].show()
+        self.controller.frames[PrePFrame].show()
     
-    def retPath(self):
-        global app
-        return app.frames[PrePFrame].path.get()
 
 class PrePFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
+        self.controller = controller
         ctk.CTkFrame.__init__(self, parent)
-        self.path = str()
-        self.data_frame = ctk.CTkFrame(self, width=self.winfo_width(), height=self.winfo_height(), corner_radius=0, fg_color="#200E3A")
+        self.rowconfigure((0,1), weight=1)
+        self.columnconfigure((0), weight=1)
+        self.path = tk.StringVar()
         
-        label_1 = ctk.CTkLabel(self)
-        label_1.configure(font=('Arial',12), justify='center', text='PREDIKSI IHSG BBCA.JK')
-        label_1.pack(side='top')
-        button_1 = ctk.CTkButton(self)
-        button_1.configure(text='Import File', command=lambda: self.getCSV())
-        button_1.place(relx='0.14', rely='0.66', anchor="center")
-        button_2 = ctk.CTkButton(self)
-        button_2.configure(text='Show File', command=lambda: self.show())
-        button_2.place(relx='0.55', rely='0.66', anchor="center")
+        # self.prepframe.rowconfigure((0,1), weight=1)
+        
+        self.TopFrame = ctk.CTkFrame(self, width=self.winfo_width(), height=self.winfo_height()/2, corner_radius=20)
+        self.TopFrame.grid(row=0,columnspan=4,padx=(10, 10), pady=(10, 10), sticky="nsew")
+        
+        import_file_button = ctk.CTkButton(master=self.TopFrame,text='Import...', command=lambda: self.getCSV())
+        import_file_button.place(anchor="center",relx=0.94, rely=0.07)
 
         # Frame to hold DataFrame
-        self.df_frame = ctk.CTkFrame(self,height=200, width=200)
-        self.df_frame.pack(side='top', pady=10)
+        self.df_frame = ctk.CTkFrame(self, width=self.winfo_width(), height=self.winfo_height()/2, corner_radius=20)
+        self.df_frame.grid(row=1,columnspan=4,padx=(10, 10), pady=(0, 10), in_=self, sticky="nsew")
+        self.df_frame.grid_propagate(False)  # Fix: Set grid_propagate to False
 
         self.df = None  # Initialize df as an instance variable
 
     def getCSV(self):
-        global app
         self.path = tk.filedialog.askopenfilename()
         if self.path.endswith('.csv'):
             self.df = pd.read_csv(self.path)
         elif self.path.endswith(('.xls', '.xlsx')):
             self.df = pd.read_excel(self.path)
+        elif self.path.endswith(('.json')):
+            self.df = pd.read_json(self.path)
+        elif self.path.endswith(('.xml')):
+            self.df = pd.read_xml(self.path)
         else:
             print("Unsupported file format. Please select a CSV or Excel file.")
-        if str(self.path.get()) != "":
-            self.succes_label = ctk.CTkLabel(app.frames[StartFrame],width=400,height=50, text="File imported successfully!")
-            self.succes_label.place(relx=0.5, rely=0.6, anchor="center")
-
-
+        if str(self.path) != "":
+            self.succes_label = ctk.CTkLabel(self.controller.frames[StartFrame],font=('Arial',18),width=400,height=50, text="File imported successfully!")
+            self.succes_label.place(relx=0.5, rely=0.7, anchor="center")
+            self.controller.frames[StartFrame].path.set(self.path)
+            self.show()
+    def getPath(self):
+        return self.path
     def show(self):
         if self.df is None:
             print("Please import a file first.")
@@ -105,9 +95,19 @@ class PrePFrame(ctk.CTkFrame):
             widget.destroy()
 
         # Display DataFrame using tksheet
-        sheet = Sheet(self.df_frame)
+        sheet = Sheet(self.df_frame, width=self.winfo_width()-30, 
+                      height=(self.winfo_height()/2)-30,
+                      page_up_down_select_row=True, 
+                      column_width=120, 
+                      startup_select=(0,1,"rows"), 
+                      headers=self.df.columns.tolist(), 
+                      theme="dark blue",
+                      row_index_width=50,
+                      empty_horizontal=0,
+                      empty_vertical=0)
+        
         sheet.enable_bindings()
-        sheet.grid(row=0, column=0, sticky="nswe")
+        sheet.grid(row=0, column=0, sticky="nsew", columnspan=4)  # Modified line
 
         # Insert data
         sheet.set_sheet_data(self.df.values.tolist())
@@ -120,9 +120,7 @@ class App(ctk.CTk):
         
         self.title("ML Toolkit")
         
-        self.geometry(f"{1100}x{580}")
-        self.grid_rowconfigure(0, weight=1)  # configure grid system
-        self.grid_columnconfigure(0, weight=1)
+        self.geometry(f"{1300}x{720}")
         # Menu Bar
         menu = customMenu.Menu(self)
 
@@ -146,7 +144,7 @@ class App(ctk.CTk):
         
         # add a oversampling submenu
         oversampling_sub_menu = PreP_submenu.menu_bar(text="Oversampling", tearoff=0)
-        oversampling_sub_menu.add_command(label='RandomOverSampler',command=lambda: print(app.frames[StartFrame].path.get()))
+        oversampling_sub_menu.add_command(label='RandomOverSampler')
         oversampling_sub_menu.add_command(label='SMOTE')
         oversampling_sub_menu.add_command(label='SMOTENC')
         oversampling_sub_menu.add_command(label='SMOTEN')
@@ -160,6 +158,7 @@ class App(ctk.CTk):
         PreP_menu.add_separator()
         
         container = ctk.CTkFrame(self, width=self.winfo_width(), height=self.winfo_height())
+        self.resizable(False, False)
         container.configure(fg_color="#101010")
         container.pack(side="top", expand=True, fill="both")
 
@@ -177,13 +176,12 @@ class App(ctk.CTk):
 
         self.show_frame(StartFrame)
     
-    def show_frame(self, cont, val=None):
+    def show_frame(self, cont):
         # if val == "PCA":
         # current_frame = self.frames[cont].PCAFrame
         current_frame = self.frames[cont]
         current_frame.configure(fg_color="#101010")
         current_frame.tkraise()
-        print(val)
 
 
 app = App()
