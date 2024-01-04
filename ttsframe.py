@@ -36,7 +36,6 @@ class TrainTestSplitFrame(ctk.CTkFrame):
         self.targetCol_entry = ctk.CTkEntry(self,width=190,height=30,placeholder_text="column name")
         self.targetCol_entry.place(relx=0.65, rely=0.51, anchor="center")
         
-        
         self.import_file_button = ctk.CTkButton(master=self,text='Import...',height=45,command=lambda:self.controller.frames[ppf.PrePFrame].getFile())
         self.import_file_button.configure(fg_color="#200E3A")
         self.import_file_button.place(anchor="center",relx=0.94, rely=0.12)

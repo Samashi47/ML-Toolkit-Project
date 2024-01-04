@@ -25,29 +25,16 @@ class App(ctk.CTk):
         
         PreP_menu = menu.menu_bar(text="Preprocessing", tearoff=0)
         PreP_menu.add_command(label="Train Test Split",command=lambda:self.frames[ppf.PrePFrame].show_frame("train_test_split"))
-        PreP_menu.add_command(label="Missing Values")
+        PreP_menu.add_command(label="Missing Values Handler",command=lambda:self.frames[ppf.PrePFrame].show_frame("misv"))
         PreP_menu.add_command(label="Normalization")
         PreP_menu.add_command(label="Standard Scaling")
         PreP_menu.add_command(label="One-Hot Encoding")
         PreP_menu.add_command(label="Label Encoding")
         PreP_menu.add_separator()
         PreP_menu.add_command(label="PCA")
+        PreP_menu.add_command(label='CondensedNearestNeighbour')
+        PreP_menu.add_command(label='SVMSMOTE',command=lambda:self.frames[ppf.PrePFrame].show_frame("svmsmote"))
         
-        # add a undersampling submenu
-        PreP_submenu = customMenu.Menu(PreP_menu)
-        undersampling_sub_menu = PreP_submenu.menu_bar(text="Undersampling", tearoff=0)
-        undersampling_sub_menu.add_command(label='ClusterCentroids')
-        undersampling_sub_menu.add_command(label='CondensedNearestNeighbour')
-        undersampling_sub_menu.add_command(label='EditedNearestNeighbours')
-        
-        # add a oversampling submenu
-        oversampling_sub_menu = PreP_submenu.menu_bar(text="Oversampling", tearoff=0)
-        oversampling_sub_menu.add_command(label='SMOTE',command=lambda:self.frames[ppf.PrePFrame].show_frame("smote"))
-        oversampling_sub_menu.add_command(label='SVMSMOTE')
-        oversampling_sub_menu.add_command(label='ADA-SYN')
-        
-        PreP_menu.add_cascade(label="Undersampling", menu=undersampling_sub_menu)
-        PreP_menu.add_cascade(label="Oversampling", menu=oversampling_sub_menu)
         
         container = ctk.CTkFrame(self, width=self.winfo_width(), height=self.winfo_height())
         self.resizable(False, False)

@@ -4,8 +4,8 @@ import pandas as pd
 from tksheet import Sheet
 import ttsframe as ttsf
 import import_frame as imf
-import smote_frame as smf
-
+import svmsmote_frame as smf
+import missingval_frame as msv
 class PrePFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
         self.controller = controller
@@ -25,32 +25,40 @@ class PrePFrame(ctk.CTkFrame):
         self.df_frame.grid_propagate(False)  # Fix: Set grid_propagate to False
 
         self.df = None  # Initialize df as an instance variable
+        self.df_msv = None
         self.X_train, self.X_test, self.y_train, self.y_test = None, None, None, None
-        
+        self.X_train_resampled, self.y_train_resampled = None, None
         self.train_test_split_frame = ttsf.TrainTestSplitFrame(self.TopFrame, controller)
         self.train_test_split_frame.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame,bordermode="outside")
         
-        self.smote_frame = smf.SmoteFrame(self.TopFrame, controller)
+        self.smote_frame = smf.SVMSmoteFrame(self.TopFrame, controller)
         self.smote_frame.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame,bordermode="outside")
-    
-        self.show_frame("train_test_split")
+
+        self.msv_frame = msv.MissingValsFrame(self.TopFrame, controller)
+        self.msv_frame.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame,bordermode="outside")
+        
+        self.show_frame("misv")
                 
     def show_frame(self, frame):
-        if frame == "train_test_split":
-            frame_to_show = self.train_test_split_frame
-            frame_to_hide = self.smote_frame
-        elif frame == "smote":
-            frame_to_show = self.smote_frame
-            frame_to_hide = self.train_test_split_frame
-        else:
+        frames = {
+            "train_test_split": self.train_test_split_frame,
+            "svmsmote": self.smote_frame,
+            "misv": self.msv_frame
+        }
+
+        frame_to_show = frames.get(frame)
+        if frame_to_show is None:
             return  # Invalid frame parameter
 
-        frame_to_show.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame, bordermode="outside")
-        frame_to_hide.place_forget()
+        for f in frames.values():
+            if f == frame_to_show:
+                f.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame, bordermode="outside")
+            else:
+                f.place_forget()
                 
     def getFile(self):
         self.path = tk.filedialog.askopenfilename()
-        if self.path.endswith('.csv'):
+        if self.path.endswith('.csv') or self.path.endswith('.data'):
             self.df = pd.read_csv(self.path)
         elif self.path.endswith(('.xls', '.xlsx')):
             self.df = pd.read_excel(self.path)
