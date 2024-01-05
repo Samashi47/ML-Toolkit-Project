@@ -85,18 +85,16 @@ class CnnFrame(ctk.CTkFrame):
 
     def applyPca(self,comp=None,Target=None,cop="True",wh="False",svd="auto",over="10"):
 
-
-        self.controller.frames[ppf.PrePFrame].X= self.controller.frames[ppf.PrePFrame].df.drop(Target, axis=1)
-        y = self.controller.frames[ppf.PrePFrame].df[Target]
-
         if self.controller.frames[ppf.PrePFrame].df is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
 
-
         if Target not in self.controller.frames[ppf.PrePFrame].df.columns:
             tk.messagebox.showerror('Python Error', "Target column not found. Please enter a valid column name.")
             return
+
+        self.controller.frames[ppf.PrePFrame].X = self.controller.frames[ppf.PrePFrame].df.drop(Target, axis=1)
+        y = self.controller.frames[ppf.PrePFrame].df[Target]
 
         if comp== '':
             comp = None
@@ -129,5 +127,5 @@ class CnnFrame(ctk.CTkFrame):
         column_names = [f'PC_{i + 1}' for i in range(X_pca.shape[1])]
         self.controller.frames[ppf.PrePFrame].X_pca = pd.DataFrame(data=X_pca, columns=column_names)
         self.controller.frames[ppf.PrePFrame].X_pca[Target] = y
-       
+
         tk.messagebox.showinfo('Info', 'PCA use Successfull: \ndata_befor_pca shape: {} \ndata_after_pca shape: {} '.format(self.controller.frames[ppf.PrePFrame].X.shape,self.controller.frames[ppf.PrePFrame].X_pca.shape))
