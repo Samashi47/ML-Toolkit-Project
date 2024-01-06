@@ -1,8 +1,7 @@
 import tkinter as tk
 import customtkinter as ctk
-import pandas as pd
-from imblearn.over_sampling import SVMSMOTE
 import ppframe as ppf
+from imblearn.over_sampling import SVMSMOTE
 
 class SVMSmoteFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -16,8 +15,9 @@ class SVMSmoteFrame(ctk.CTkFrame):
         
         self.Strat_label = ctk.CTkLabel(self,font=('Arial',17), text="Sampling strategy : ")
         self.Strat_label.place(anchor="center",relx=0.177, rely=0.25)
-        self.Strat_entry = ctk.CTkEntry(self,width=190,height=30,placeholder_text="float - default = \"auto\"")
-        self.Strat_entry.place(relx=0.35, rely=0.26, anchor="center")
+        self.Strat_optMenu = ctk.CTkOptionMenu(self,width=190,height=30,values=["auto","minority","not minority","not majority","all"])
+        self.Strat_optMenu.configure(fg_color="#200E3A")
+        self.Strat_optMenu.place(relx=0.35, rely=0.26, anchor="center")
         
         self.RandS_label = ctk.CTkLabel(self,font=('Arial',17), text="Random state : ")
         self.RandS_label.place(anchor="center",relx=0.175, rely=0.45)
@@ -64,7 +64,7 @@ class SVMSmoteFrame(ctk.CTkFrame):
         self.showTargetTestSplit_button.place(anchor="center",relx=0.92, rely=0.87)
         
         self.svmsmote_button = ctk.CTkButton(master=self,text='Apply SVMSMOTE',font=('Arial',15),width=400,height=40,
-                                          command=lambda:self.applySVMSMOTE(str(self.Strat_entry.get()),
+                                          command=lambda:self.applySVMSMOTE(str(self.Strat_optMenu.get()),
                                                                         str(self.RandS_entry.get()),
                                                                         str(self.kNei_entry.get()),
                                                                         str(self.mNeigh_entry.get()),
@@ -78,7 +78,6 @@ class SVMSmoteFrame(ctk.CTkFrame):
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
 
-        
         if self.controller.frames[ppf.PrePFrame].X_train is None or self.controller.frames[ppf.PrePFrame].y_train is None:
             tk.messagebox.showerror('Python Error', "Please split the data first.")
             return
@@ -90,8 +89,6 @@ class SVMSmoteFrame(ctk.CTkFrame):
             tk.messagebox.showerror('Python Error', "Categorical columns represented as strings are not supported. Please convert them to numerical values.")
             return
         
-        if sampling_strategy == '':
-            sampling_strategy = "auto"
         if k_neighbors == '':
             k_neighbors = 5
         if random_state == '':
@@ -101,12 +98,6 @@ class SVMSmoteFrame(ctk.CTkFrame):
         if out_step == '':
             out_step = 0.5
             
-        if isinstance(sampling_strategy, str) and sampling_strategy != 'auto':
-            try:
-                sampling_strategy = float(sampling_strategy)
-            except:
-                tk.messagebox.showerror('Python Error', "sampling strategy must be a float.")
-                return
         if isinstance(k_neighbors, str):
             try:
                 k_neighbors = int(k_neighbors)

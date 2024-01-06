@@ -1,6 +1,8 @@
 import tkinter as tk
 import customtkinter as ctk
 import customMenu
+import os
+import ctypes
 import ppframe as ppf
 import import_frame as imf
 
@@ -11,11 +13,11 @@ ctk.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", 
 class App(ctk.CTk):
     def __init__(self, *args, **kwargs):
         ctk.CTk.__init__(self, *args, **kwargs)
-        
         self.title("ML Toolkit")
-        
         self.geometry(f"{1300}x{720}")
-        # Menu Bar
+        self.iconbitmap(os.path.join("images","ML-icon.ico"))
+        self.myappid = 'heh' # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
         menu = customMenu.Menu(self)
 
         file_menu = menu.menu_bar(text="File", tearoff=0)
@@ -26,13 +28,12 @@ class App(ctk.CTk):
         PreP_menu = menu.menu_bar(text="Preprocessing", tearoff=0)
         PreP_menu.add_command(label="Train Test Split",command=lambda:self.frames[ppf.PrePFrame].show_frame("train_test_split"))
         PreP_menu.add_command(label="Missing Values Handler",command=lambda:self.frames[ppf.PrePFrame].show_frame("misv"))
-        PreP_menu.add_command(label="Normalization")
-        PreP_menu.add_command(label="Standard Scaling")
+        PreP_menu.add_command(label="Normalization & Standardization",command=lambda:self.frames[ppf.PrePFrame].show_frame("norm_sc"))
         PreP_menu.add_command(label="One-Hot Encoding")
         PreP_menu.add_command(label="Label Encoding")
         PreP_menu.add_separator()
-        PreP_menu.add_command(label="PCA")
-        PreP_menu.add_command(label='CondensedNearestNeighbour')
+        PreP_menu.add_command(label="PCA",command=lambda:self.frames[ppf.PrePFrame].show_frame("PCA"))
+        PreP_menu.add_command(label='CondensedNearestNeighbour',command=lambda:self.frames[ppf.PrePFrame].show_frame("cnn"))
         PreP_menu.add_command(label='SVMSMOTE',command=lambda:self.frames[ppf.PrePFrame].show_frame("svmsmote"))
         
         

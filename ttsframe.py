@@ -33,35 +33,36 @@ class TrainTestSplitFrame(ctk.CTkFrame):
         
         self.TargetCol_label = ctk.CTkLabel(self,font=('Arial',17), text="Target : ")
         self.TargetCol_label.place(anchor="center",relx=0.53, rely=0.5)
-        self.targetCol_entry = ctk.CTkEntry(self,width=190,height=30,placeholder_text="column name")
-        self.targetCol_entry.place(relx=0.65, rely=0.51, anchor="center")
+        self.targetCol_optMenu = ctk.CTkOptionMenu(self,width=190,height=30,values=[],dynamic_resizing=True)
+        self.targetCol_optMenu.configure(fg_color="#200E3A")
+        self.targetCol_optMenu.place(relx=0.65, rely=0.51, anchor="center")
         
-        self.import_file_button = ctk.CTkButton(master=self,text='Import...',height=45,command=lambda:self.controller.frames[ppf.PrePFrame].getFile())
+        self.import_file_button = ctk.CTkButton(master=self,text='Import...',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].getFile())
         self.import_file_button.configure(fg_color="#200E3A")
-        self.import_file_button.place(anchor="center",relx=0.94, rely=0.12)
+        self.import_file_button.place(anchor="center",relx=0.92, rely=0.12)
         
-        self.showEntireData_button = ctk.CTkButton(master=self,text='load Entire Dataset',height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df))
+        self.showEntireData_button = ctk.CTkButton(master=self,text='load Entire Dataset',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df))
         self.showEntireData_button.configure(fg_color="#200E3A")
-        self.showEntireData_button.place(anchor="center",relx=0.94, rely=0.27)
+        self.showEntireData_button.place(anchor="center",relx=0.92, rely=0.27)
         
-        self.showTrainSplit_button = ctk.CTkButton(master=self,text='load Train Split',height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].X_train))
+        self.showTrainSplit_button = ctk.CTkButton(master=self,text='load Train Split',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].X_train))
         self.showTrainSplit_button.configure(fg_color="#200E3A")
-        self.showTrainSplit_button.place(anchor="center",relx=0.94, rely=0.42)
+        self.showTrainSplit_button.place(anchor="center",relx=0.92, rely=0.42)
         
-        self.showTestSplit_button = ctk.CTkButton(master=self,text='load Test Split',height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].X_test))
+        self.showTestSplit_button = ctk.CTkButton(master=self,text='load Test Split',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].X_test))
         self.showTestSplit_button.configure(fg_color="#200E3A")
-        self.showTestSplit_button.place(anchor="center",relx=0.94, rely=0.57)
+        self.showTestSplit_button.place(anchor="center",relx=0.92, rely=0.57)
         
-        self.showTargetTrainSplit_button = ctk.CTkButton(master=self,text='load Train Target',height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].y_train))
+        self.showTargetTrainSplit_button = ctk.CTkButton(master=self,text='load Train Target',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].y_train))
         self.showTargetTrainSplit_button.configure(fg_color="#200E3A")
-        self.showTargetTrainSplit_button.place(anchor="center",relx=0.94, rely=0.72)
+        self.showTargetTrainSplit_button.place(anchor="center",relx=0.92, rely=0.72)
         
-        self.showTargetTestSplit_button = ctk.CTkButton(master=self,text='load Test Traget',height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].y_test))
+        self.showTargetTestSplit_button = ctk.CTkButton(master=self,text='load Test Traget',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].y_test))
         self.showTargetTestSplit_button.configure(fg_color="#200E3A")
-        self.showTargetTestSplit_button.place(anchor="center",relx=0.94, rely=0.87)
+        self.showTargetTestSplit_button.place(anchor="center",relx=0.92, rely=0.87)
         
         self.split_button = ctk.CTkButton(master=self,text='Split Data',font=('Arial',15),width=400,height=40,
-                                          command=lambda:self.splitData(str(self.targetCol_entry.get()),
+                                          command=lambda:self.splitData(str(self.targetCol_optMenu.get()),
                                                                         str(self.test_size_entry.get()),
                                                                         str(self.train_size_entry.get()),
                                                                         str(self.RandS_entry.get()),
