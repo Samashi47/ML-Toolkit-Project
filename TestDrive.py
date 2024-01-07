@@ -29,7 +29,7 @@ class App(ctk.CTk):
         PreP_menu.add_command(label="Train Test Split",command=lambda:self.frames[ppf.PrePFrame].show_frame("train_test_split"))
         PreP_menu.add_command(label="Missing Values Handler",command=lambda:self.frames[ppf.PrePFrame].show_frame("misv"))
         PreP_menu.add_command(label="Normalization & Standardization",command=lambda:self.frames[ppf.PrePFrame].show_frame("norm_sc"))
-        PreP_menu.add_command(label="One-Hot Encoding")
+        PreP_menu.add_command(label="One-Hot Encoding",command=lambda:self.frames[ppf.PrePFrame].show_frame("ohe"))
         PreP_menu.add_command(label="Label Encoding")
         PreP_menu.add_separator()
         PreP_menu.add_command(label="PCA",command=lambda:self.frames[ppf.PrePFrame].show_frame("PCA"))

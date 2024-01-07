@@ -60,7 +60,7 @@ class PCAFrame(ctk.CTkFrame):
         self.after_pca_button.configure(fg_color="#200E3A")
         self.after_pca_button.place(anchor="center", relx=0.9, rely=0.72)
 
-        self.split_button = ctk.CTkButton(master=self, text='Submit', font=('Arial', 15), width=300, height=40,
+        self.pca_button = ctk.CTkButton(master=self, text='Submit', font=('Arial', 15), width=300, height=40,
                                           command=lambda:self.applyPCA(str(self.components_entry.get()),
                                                                        str(self.Target_optMenu.get()),
                                                                        str(self.copy_optMenu.get()),
@@ -69,8 +69,8 @@ class PCAFrame(ctk.CTkFrame):
                                                                        str(self.samples_entry.get())
                                                                       ))
 
-        self.split_button.configure(fg_color="#200E3A")
-        self.split_button.place(anchor="center", relx=0.45, rely=0.86)
+        self.pca_button.configure(fg_color="#200E3A")
+        self.pca_button.place(anchor="center", relx=0.45, rely=0.86)
 
 
     def applyPCA(self,comp=None,Target=None,cop="True",wh="False",svd="auto",over="10"):

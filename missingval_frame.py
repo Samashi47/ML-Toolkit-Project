@@ -157,6 +157,7 @@ class MissingValsFrame(ctk.CTkFrame):
                 self.replaceMode_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols_cat[-1]))
                 self.replaceWithValue_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols))
                 self.replaceWithValue_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
+                self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df_msv)
                 tk.messagebox.showinfo('Info', 'Column removed from MV Dataframe')
             else:
                 tk.messagebox.showerror('Python Error', "Please select a column from the list.")
@@ -166,6 +167,7 @@ class MissingValsFrame(ctk.CTkFrame):
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             if self.controller.frames[ppf.PrePFrame].df_msv.isnull().values.any():
                 self.controller.frames[ppf.PrePFrame].df_msv.dropna(inplace=True)
+                self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df_msv)
                 tk.messagebox.showinfo('Info', 'Rows with null values removed from MV Dataframe')
             else:
                 tk.messagebox.showerror('Python Error', "No null values in the Dataframe.")
@@ -175,6 +177,7 @@ class MissingValsFrame(ctk.CTkFrame):
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             if self.controller.frames[ppf.PrePFrame].df_msv[col].isnull().values.any():
                 self.controller.frames[ppf.PrePFrame].df_msv[col].fillna(self.controller.frames[ppf.PrePFrame].df_msv[col].mean(), inplace=True)
+                self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df_msv)
                 tk.messagebox.showinfo('Info', 'Null values replaced with mean in MV Dataframe')
             else:
                 tk.messagebox.showerror('Python Error', "No null values in the column.")
@@ -184,6 +187,7 @@ class MissingValsFrame(ctk.CTkFrame):
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             if self.controller.frames[ppf.PrePFrame].df_msv[col].isnull().values.any():
                 self.controller.frames[ppf.PrePFrame].df_msv[col].fillna(self.controller.frames[ppf.PrePFrame].df_msv[col].median(), inplace=True)
+                self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df_msv)
                 tk.messagebox.showinfo('Info', 'Null values replaced with median in MV Dataframe')
             else:
                 tk.messagebox.showerror('Python Error', "No null values in the column.")
@@ -193,6 +197,7 @@ class MissingValsFrame(ctk.CTkFrame):
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             if self.controller.frames[ppf.PrePFrame].df_msv[col].isnull().values.any():
                 self.controller.frames[ppf.PrePFrame].df_msv[col].fillna(self.controller.frames[ppf.PrePFrame].df_msv[col].mode()[0], inplace=True)
+                self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df_msv)
                 tk.messagebox.showinfo('Info', 'Null values replaced with mode in MV Dataframe')
             else:
                 tk.messagebox.showerror('Python Error', "No null values in the column.")
@@ -209,6 +214,7 @@ class MissingValsFrame(ctk.CTkFrame):
                     tk.messagebox.showerror('Python Error', "Please enter a value of the correct type.")
                     return
                 self.controller.frames[ppf.PrePFrame].df_msv[col].fillna(value, inplace=True)
+                self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df_msv)
                 tk.messagebox.showinfo('Info', 'Null values replaced with value in MV Dataframe')
             else:
                 tk.messagebox.showerror('Python Error', "No null values in the column.")

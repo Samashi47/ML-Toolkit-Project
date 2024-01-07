@@ -9,6 +9,7 @@ import missingval_frame as msv
 import cnn_frame as cnnf
 import pca_frame as pcaf
 import norm_sc_frame as nscf
+import onehot_enc_frame as ohef
 
 class PrePFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -32,6 +33,7 @@ class PrePFrame(ctk.CTkFrame):
         self.df_msv = None
         self.dfPCA = None
         self.dfNSC = None
+        self.dfOHE = None
         self.X_train, self.X_test, self.y_train, self.y_test = None, None, None, None
         self.X_train_resampled, self.y_train_resampled = None, None
         self.dfCols,self.dfCols_num,self.dfCols_cat = None, None, None
@@ -54,7 +56,10 @@ class PrePFrame(ctk.CTkFrame):
         self.norm_sc_frame = nscf.NormSCFrame(self.TopFrame, controller)
         self.norm_sc_frame.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame,bordermode="outside")
         
-        self.show_frame("norm_sc")
+        self.ohe_frame = ohef.OneHotEncFrame(self.TopFrame, controller)
+        self.ohe_frame.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame,bordermode="outside")
+        
+        self.show_frame("ohe")
         
     def show_frame(self, frame):
         frames = {
@@ -63,7 +68,8 @@ class PrePFrame(ctk.CTkFrame):
             "misv": self.msv_frame,
             "cnn": self.cnn_frame,
             "PCA": self.pca_frame,
-            "norm_sc": self.norm_sc_frame
+            "norm_sc": self.norm_sc_frame,
+            "ohe": self.ohe_frame
         }
 
         frame_to_show = frames.get(frame)
@@ -96,6 +102,8 @@ class PrePFrame(ctk.CTkFrame):
             self.controller.frames[imf.StartFrame].show_file_button.configure(state='normal')
             self.df_msv = self.df.copy()
             self.dfPCA = self.df.copy()
+            self.dfNSC = self.df.copy()
+            self.dfOHE = self.df.copy()
             self.showDataFrame(self.df)
             self.getColumns()
     
@@ -172,5 +180,14 @@ class PrePFrame(ctk.CTkFrame):
             
             self.controller.frames[PrePFrame].pca_frame.Target_optMenu.configure(values=self.dfCols)
             self.controller.frames[PrePFrame].pca_frame.Target_optMenu.configure(variable=tk.StringVar(value=self.dfCols[-1]))
+            
+            self.controller.frames[PrePFrame].norm_sc_frame.nCols_optMenu.configure(values=self.dfNSC.columns.tolist())
+            self.controller.frames[PrePFrame].norm_sc_frame.nCols_optMenu.configure(variable=tk.StringVar(value=self.dfNSC.columns.tolist()[-1]))
+            self.controller.frames[PrePFrame].norm_sc_frame.scCols_optMenu.configure(values=self.dfNSC.columns.tolist())
+            self.controller.frames[PrePFrame].norm_sc_frame.scCols_optMenu.configure(variable=tk.StringVar(value=self.dfNSC.columns.tolist()[-1]))
+            self.controller.frames[PrePFrame].norm_sc_frame.mmCols_optMenu.configure(values=self.dfNSC.columns.tolist())
+            self.controller.frames[PrePFrame].norm_sc_frame.mmCols_optMenu.configure(variable=tk.StringVar(value=self.dfNSC.columns.tolist()[-1]))
+            self.controller.frames[PrePFrame].norm_sc_frame.mabsCols_optMenu.configure(values=self.dfNSC.columns.tolist())
+            self.controller.frames[PrePFrame].norm_sc_frame.mabsCols_optMenu.configure(variable=tk.StringVar(value=self.dfNSC.columns.tolist()[-1]))
         else:
             return
