@@ -189,5 +189,7 @@ class PrePFrame(ctk.CTkFrame):
             self.controller.frames[PrePFrame].norm_sc_frame.mmCols_optMenu.configure(variable=tk.StringVar(value=self.dfNSC.columns.tolist()[-1]))
             self.controller.frames[PrePFrame].norm_sc_frame.mabsCols_optMenu.configure(values=self.dfNSC.columns.tolist())
             self.controller.frames[PrePFrame].norm_sc_frame.mabsCols_optMenu.configure(variable=tk.StringVar(value=self.dfNSC.columns.tolist()[-1]))
+            self.controller.frames[PrePFrame].ohe_frame.target_optMenu.configure(values=self.dfOHE.columns.tolist())
+            self.controller.frames[PrePFrame].ohe_frame.target_optMenu.configure(variable=tk.StringVar(value=self.dfOHE.columns.tolist()[-1]))           
         else:
             return

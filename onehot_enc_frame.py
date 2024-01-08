@@ -73,7 +73,7 @@ class OneHotEncFrame(ctk.CTkFrame):
         self.showEntireData_button.configure(fg_color="#200E3A")
         self.showEntireData_button.place(anchor="center",relx=0.92, rely=0.42)
         
-        self.loadOHEdf_button = ctk.CTkButton(master=self,text='Load N&SC Dataframe',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfNSC))
+        self.loadOHEdf_button = ctk.CTkButton(master=self,text='Load OHE Dataframe',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfOHE))
         self.loadOHEdf_button.configure(fg_color="#200E3A")
         self.loadOHEdf_button.place(anchor="center",relx=0.92, rely=0.57)
         
@@ -87,22 +87,22 @@ class OneHotEncFrame(ctk.CTkFrame):
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
         
-        if target == 'None':
+        if target == '':
             tk.messagebox.showerror('Python Error', "Please select a target column.")
             return
         
-        if minfreq == 'None':
+        X = self.controller.frames[ppf.PrePFrame].dfOHE.drop(target, axis=1)
+        y = self.controller.frames[ppf.PrePFrame].dfOHE[target]
+        
+        if minfreq == '':
             minfreq = None
-        else:
-            minfreq = int(minfreq)
+        elif minfreq == 'None':
+            minfreq = None
         
-        if maxCat == 'None':
+        if maxCat == '':
             maxCat = None
-        else:
-            maxCat = int(maxCat)
-        
-        if handleUnk == 'infrequent_if_exist':
-            handleUnk = 'ignore'
+        elif maxCat == 'None':
+            maxCat = None
         
         if drop == 'None':
             drop = None
@@ -119,6 +119,31 @@ class OneHotEncFrame(ctk.CTkFrame):
         else:
             dtype = np.uint8
         
+        if isinstance(minfreq, str) and minfreq != 'None':
+            try:
+                minfreq = int(minfreq)
+            except:
+                tk.messagebox.showerror('Python Error', "min_frequency must be an Int.")
+                return
+            
+        if isinstance(maxCat, str) and maxCat != 'None':
+            try:
+                maxCat = int(maxCat)
+            except:
+                tk.messagebox.showerror('Python Error', "max_categories must be an Int.")
+                return
+        
         OHE = OneHotEncoder(drop=drop,sparse=sparse,dtype=dtype,handle_unknown=handleUnk,min_frequency=minfreq,max_categories=maxCat)
         
+        encoded_values = OHE.fit_transform(np.asarray(y).reshape(-1,1)).toarray()
+        encoded_df = pd.DataFrame(encoded_values, columns=OHE.get_feature_names_out([target]))
         
+        self.controller.frames[ppf.PrePFrame].dfOHE = X
+        self.controller.frames[ppf.PrePFrame].dfOHE = pd.concat([self.controller.frames[ppf.PrePFrame].dfOHE, encoded_df], axis=1)
+        
+        self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfOHE)
+        
+    def saveChanges(self):
+        if self.controller.frames[ppf.PrePFrame].dfOHE is not None:
+            self.controller.frames[ppf.PrePFrame].df = self.controller.frames[ppf.PrePFrame].dfOHE
+            tk.messagebox.showinfo('Info', 'Changes saved to Dataframe')
