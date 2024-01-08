@@ -19,7 +19,7 @@ class StartFrame(ctk.CTkFrame):
         self.import_button.configure(fg_color="#200E3A")
         self.import_button.place(relx=0.5, rely=0.5, anchor="center")
         # Show File button
-        self.show_file_button = ctk.CTkButton(self,width=400,height=50, text="Show File",state='disabled',command=lambda:self.controller.show_frame(ppf.PrePFrame))
+        self.show_file_button = ctk.CTkButton(self,width=400,height=50, text="Show File",state='disabled',command=lambda:self.controller.show_main_frame(ppf.PrePFrame))
         self.show_file_button.configure(fg_color="#200E3A")
         self.show_file_button.place(relx=0.5, rely=0.6, anchor="center")
                
