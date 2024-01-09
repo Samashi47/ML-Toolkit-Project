@@ -1,13 +1,16 @@
 import tkinter as tk
 import customtkinter as ctk
 from sklearn.model_selection import train_test_split
-import ppframe as ppf
+import preprocessing.ppframe as ppf
 
 
 class TrainTestSplitFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,fg_color='transparent',corner_radius=20)
+        
+        self.tts_label = ctk.CTkLabel(self,font=('Arial',30),text="Train Test Split: ")
+        self.tts_label.place(anchor="center",relx=0.5, rely=0.07)
         
         # Train Test Split Frame
         self.TrainS_label = ctk.CTkLabel(self,font=('Arial',17), text="Train Size : ")

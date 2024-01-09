@@ -2,14 +2,16 @@ import tkinter as tk
 import customtkinter as ctk
 from tksheet import Sheet
 import pandas as pd
-import ttsframe as ttsf
 import import_frame as imf
-import svmsmote_frame as smf
-import missingval_frame as msv
-import cnn_frame as cnnf
-import pca_frame as pcaf
-import norm_sc_frame as nscf
-import onehot_enc_frame as ohef
+import preprocessing.subframes.ttsframe as ttsf
+import preprocessing.subframes.svmsmote_frame as smf
+import preprocessing.subframes.missingval_frame as msv
+import preprocessing.subframes.cnn_frame as cnnf
+import preprocessing.subframes.pca_frame as pcaf
+import preprocessing.subframes.norm_sc_frame as nscf
+import preprocessing.subframes.onehot_enc_frame as ohef
+import preprocessing.subframes.labelenc_frame as lef
+import visualization.vizualization_frame as vsf
 
 class PrePFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -34,6 +36,7 @@ class PrePFrame(ctk.CTkFrame):
         self.dfPCA = None
         self.dfNSC = None
         self.dfOHE = None
+        self.dfLE = None
         self.X_train, self.X_test, self.y_train, self.y_test = None, None, None, None
         self.X_train_resampled, self.y_train_resampled = None, None
         self.dfCols,self.dfCols_num,self.dfCols_cat = None, None, None
@@ -59,7 +62,10 @@ class PrePFrame(ctk.CTkFrame):
         self.ohe_frame = ohef.OneHotEncFrame(self.TopFrame, controller)
         self.ohe_frame.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame,bordermode="outside")
         
-        self.show_frame("ohe")
+        self.le_frame = lef.LabelEncFrame(self.TopFrame, controller)
+        self.le_frame.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame,bordermode="outside")
+        
+        self.show_frame("train_test_split")
         
     def show_frame(self, frame):
         frames = {
@@ -69,7 +75,8 @@ class PrePFrame(ctk.CTkFrame):
             "cnn": self.cnn_frame,
             "PCA": self.pca_frame,
             "norm_sc": self.norm_sc_frame,
-            "ohe": self.ohe_frame
+            "ohe": self.ohe_frame,
+            "le": self.le_frame
         }
 
         frame_to_show = frames.get(frame)
@@ -104,6 +111,7 @@ class PrePFrame(ctk.CTkFrame):
             self.dfPCA = self.df.copy()
             self.dfNSC = self.df.copy()
             self.dfOHE = self.df.copy()
+            self.dfLE = self.df.copy()
             self.showDataFrame(self.df)
             self.getColumns()
     
@@ -191,5 +199,14 @@ class PrePFrame(ctk.CTkFrame):
             self.controller.frames[PrePFrame].norm_sc_frame.mabsCols_optMenu.configure(variable=tk.StringVar(value=self.dfNSC.columns.tolist()[-1]))
             self.controller.frames[PrePFrame].ohe_frame.target_optMenu.configure(values=self.dfOHE.columns.tolist())
             self.controller.frames[PrePFrame].ohe_frame.target_optMenu.configure(variable=tk.StringVar(value=self.dfOHE.columns.tolist()[-1]))           
+            
+            self.controller.frames[PrePFrame].le_frame.target_optMenu.configure(values=self.dfLE.columns.tolist())
+            self.controller.frames[PrePFrame].le_frame.target_optMenu.configure(variable=tk.StringVar(value=self.dfLE.columns.tolist()[-1]))
+            
+            self.controller.frames[vsf.visulizeFrame].matplotlib_frame.x_dropdown.configure(values=self.dfCols)
+            self.controller.frames[vsf.visulizeFrame].matplotlib_frame.y_dropdown.configure(values=self.dfCols)
+            
+            self.controller.frames[vsf.visulizeFrame].seaborn_frame.x_dropdown.configure(values=self.dfCols)
+            self.controller.frames[vsf.visulizeFrame].seaborn_frame.y_dropdown.configure(values=self.dfCols)
         else:
             return

@@ -1,7 +1,7 @@
 import tkinter as tk
 import customtkinter as ctk
-import ppframe as ppf
-
+import preprocessing.ppframe as ppf
+import modeling.models_frame as mf
 
 class StartFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):

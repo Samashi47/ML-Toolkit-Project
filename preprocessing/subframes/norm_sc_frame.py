@@ -2,7 +2,7 @@ import tkinter as tk
 import customtkinter as ctk
 from sklearn.preprocessing import Normalizer, StandardScaler, minmax_scale, maxabs_scale
 import pandas as pd
-import ppframe as ppf
+import preprocessing.ppframe as ppf
 import re
 
 class NormSCFrame(ctk.CTkFrame):
@@ -87,23 +87,27 @@ class NormSCFrame(ctk.CTkFrame):
         self.mabsCols_optMenu.place(relx=0.75, rely=0.76, anchor="center")
         self.maxabs_button = ctk.CTkButton(master=self,text='MaxAbs',font=('Arial',15),width=190,height=30,command=lambda:self.applyMaxAbs(str(self.maxabsAxis_OptMenu.get()),str(self.mabsCols_optMenu.get())))
         self.maxabs_button.configure(fg_color="#200E3A")
-        self.maxabs_button.place(anchor="center",relx=0.62, rely=0.93)
+        self.maxabs_button.place(anchor="center",relx=0.62, rely=0.955)
         
         self.import_file_button = ctk.CTkButton(master=self,text='Import...',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].getFile())
         self.import_file_button.configure(fg_color="#200E3A")
-        self.import_file_button.place(anchor="center",relx=0.92, rely=0.27)
+        self.import_file_button.place(anchor="center",relx=0.92, rely=0.14)
         
         self.showEntireData_button = ctk.CTkButton(master=self,text='Load Original Dataset',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df))
         self.showEntireData_button.configure(fg_color="#200E3A")
-        self.showEntireData_button.place(anchor="center",relx=0.92, rely=0.42)
+        self.showEntireData_button.place(anchor="center",relx=0.92, rely=0.3)
         
         self.loadNSCDF_button = ctk.CTkButton(master=self,text='Load N&SC Dataframe',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfNSC))
         self.loadNSCDF_button.configure(fg_color="#200E3A")
-        self.loadNSCDF_button.place(anchor="center",relx=0.92, rely=0.57)
+        self.loadNSCDF_button.place(anchor="center",relx=0.92, rely=0.46)
+        
+        self.rollback_button = ctk.CTkButton(master=self,text='Rollback',width=200,height=45,command=lambda:self.rollback())
+        self.rollback_button.configure(fg_color="#200E3A")
+        self.rollback_button.place(anchor="center",relx=0.92, rely=0.62)
         
         self.SaveChanges_button = ctk.CTkButton(master=self,text='Save changes to Dataframe',width=200,height=45,command=lambda:self.saveChanges())
         self.SaveChanges_button.configure(fg_color="#200E3A")
-        self.SaveChanges_button.place(anchor="center",relx=0.92, rely=0.72)
+        self.SaveChanges_button.place(anchor="center",relx=0.92, rely=0.78)
         
     def applyNorm(self,norm,target):
         if self.controller.frames[ppf.PrePFrame].dfNSC is None:
@@ -203,4 +207,10 @@ class NormSCFrame(ctk.CTkFrame):
     def saveChanges(self):
         if self.controller.frames[ppf.PrePFrame].dfNSC is not None:
             self.controller.frames[ppf.PrePFrame].df = self.controller.frames[ppf.PrePFrame].dfNSC
-            tk.messagebox.showinfo('Info', 'Changes saved to Dataframe')
+            tk.messagebox.showinfo('Info', 'Changes saved to Dataframe, rollback not available.')
+            
+    def rollback(self):
+        if self.controller.frames[ppf.PrePFrame].dfNSC is not None and self.controller.frames[ppf.PrePFrame].df is not None:
+            self.controller.frames[ppf.PrePFrame].dfNSC = self.controller.frames[ppf.PrePFrame].df
+            self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfNSC)
+            tk.messagebox.showinfo('Info', 'Rollback successful')

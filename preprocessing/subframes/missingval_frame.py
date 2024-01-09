@@ -4,7 +4,7 @@ import pandas as pd
 import sys
 import os
 import io
-import ppframe as ppf
+import preprocessing.ppframe as ppf
 
 class MissingValsFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -16,13 +16,13 @@ class MissingValsFrame(ctk.CTkFrame):
         # Missing Values Frame
         
         self.removeCol_label = ctk.CTkLabel(self,font=('Arial',17), text="Remove Columns : ")
-        self.removeCol_label.place(anchor="center",relx=0.11, rely=0.16)
+        self.removeCol_label.place(anchor="center",relx=0.13, rely=0.16)
         self.Cols_optMenu = ctk.CTkOptionMenu(self, width=190, height=30,values=[],dynamic_resizing=True)
         self.Cols_optMenu.configure(fg_color="#200E3A")
-        self.Cols_optMenu.place(relx=0.11, rely=0.30, anchor="center")
+        self.Cols_optMenu.place(relx=0.13, rely=0.30, anchor="center")
         self.removeCol_button = ctk.CTkButton(master=self,text='Remove',width=190,height=30,command=lambda:self.removeCol(self.Cols_optMenu.get()))
         self.removeCol_button.configure(fg_color="#200E3A")
-        self.removeCol_button.place(anchor="center",relx=0.11, rely=0.44)
+        self.removeCol_button.place(anchor="center",relx=0.13, rely=0.44)
         
         self.seph = tk.ttk.Separator(self, orient='horizontal', style='TSeparator')
         self.seph.place(relx=0.01, rely=0.55, width=1260, bordermode="outside")
@@ -30,11 +30,11 @@ class MissingValsFrame(ctk.CTkFrame):
         self.sep1v = tk.ttk.Separator(self, orient='vertical')
         self.sep1v.place(relx=0.25, rely=0.1, height=400, bordermode="outside")
         
-        self.removeRow_label = ctk.CTkLabel(self,font=('Arial',17), text="Remove Rows :")
-        self.removeRow_label.place(anchor="center",relx=0.11, rely=0.64)
-        self.removeRow_button = ctk.CTkButton(master=self,text='Remove rows w/ Nulls',width=190,height=30,command=lambda:self.removeNArows())
+        self.removeRow_label = ctk.CTkLabel(self,font=('Arial',17), text="Remove Rows With Null Values:")
+        self.removeRow_label.place(anchor="center",relx=0.13, rely=0.64)
+        self.removeRow_button = ctk.CTkButton(master=self,text='Remove rows w/ Nulls',width=190,height=45,command=lambda:self.removeNArows())
         self.removeRow_button.configure(fg_color="#200E3A")
-        self.removeRow_button.place(anchor="center",relx=0.11, rely=0.78)
+        self.removeRow_button.place(anchor="center",relx=0.13, rely=0.82)
 
         self.replaceMean_label = ctk.CTkLabel(self,font=('Arial',17), text="Replace with mean : ")
         self.replaceMean_label.place(anchor="center",relx=0.4, rely=0.16)
@@ -71,36 +71,39 @@ class MissingValsFrame(ctk.CTkFrame):
         self.replaceWithValue_optMenu = ctk.CTkOptionMenu(self, width=145, height=30,values=[],dynamic_resizing=True)
         self.replaceWithValue_optMenu.configure(fg_color="#200E3A")
         self.replaceWithValue_optMenu.place(relx=0.63, rely=0.78, anchor="center")
-        self.replaceWithValue_entry = ctk.CTkEntry(self, width=145, height=30)
-        self.replaceWithValue_entry.configure(fg_color="#200E3A")
+        self.replaceWithValue_entry = ctk.CTkEntry(self, width=145, height=30,placeholder_text="Enter value")
         self.replaceWithValue_entry.place(relx=0.76, rely=0.78, anchor="center")
         self.replaceWithValue_button = ctk.CTkButton(master=self,text='Replace',width=190,height=30,command=lambda:self.replaceWithValue(self.replaceWithValue_optMenu.get(),self.replaceWithValue_entry.get()))
         self.replaceWithValue_button.configure(fg_color="#200E3A")
         self.replaceWithValue_button.place(anchor="center",relx=0.7, rely=0.92)
                
-        self.import_file_button = ctk.CTkButton(master=self,text='Import...',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].getFile())
+        self.import_file_button = ctk.CTkButton(master=self,text='Import...',width=200,height=40,command=lambda:self.controller.frames[ppf.PrePFrame].getFile())
         self.import_file_button.configure(fg_color="#200E3A")
-        self.import_file_button.place(anchor="center",relx=0.92, rely=0.12)
+        self.import_file_button.place(anchor="center",relx=0.92, rely=0.08)
         
-        self.showEntireData_button = ctk.CTkButton(master=self,text='Load Original Dataset',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df))
+        self.showEntireData_button = ctk.CTkButton(master=self,text='Load Original Dataset',width=200,height=40,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df))
         self.showEntireData_button.configure(fg_color="#200E3A")
-        self.showEntireData_button.place(anchor="center",relx=0.92, rely=0.27)
+        self.showEntireData_button.place(anchor="center",relx=0.92, rely=0.22)
         
-        self.loadMissValsDF_button = ctk.CTkButton(master=self,text='Load missing values Dataframe',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df_msv))
+        self.loadMissValsDF_button = ctk.CTkButton(master=self,text='Load missing values Dataframe',width=200,height=40,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df_msv))
         self.loadMissValsDF_button.configure(fg_color="#200E3A")
-        self.loadMissValsDF_button.place(anchor="center",relx=0.92, rely=0.42)
+        self.loadMissValsDF_button.place(anchor="center",relx=0.92, rely=0.36)
         
-        self.CountMissVals_button = ctk.CTkButton(master=self,text='Count missing values',width=200,height=45,command=lambda:self.printMissingVals())
+        self.CountMissVals_button = ctk.CTkButton(master=self,text='Count missing values',width=200,height=40,command=lambda:self.printMissingVals())
         self.CountMissVals_button.configure(fg_color="#200E3A")
-        self.CountMissVals_button.place(anchor="center",relx=0.92, rely=0.57)
+        self.CountMissVals_button.place(anchor="center",relx=0.92, rely=0.5)
         
-        self.printDFInfo_button = ctk.CTkButton(master=self,text='Show Dataframe info',width=200,height=45,command=lambda:self.printDFInfo())
+        self.printDFInfo_button = ctk.CTkButton(master=self,text='Show Dataframe info',width=200,height=40,command=lambda:self.printDFInfo())
         self.printDFInfo_button.configure(fg_color="#200E3A")
-        self.printDFInfo_button.place(anchor="center",relx=0.92, rely=0.72)
+        self.printDFInfo_button.place(anchor="center",relx=0.92, rely=0.64)
         
-        self.SaveChanges_button = ctk.CTkButton(master=self,text='Save changes to Dataframe',width=200,height=45,command=lambda:self.saveChanges())
+        self.rollback_button = ctk.CTkButton(master=self,text='Rollback',width=200,height=40,command=lambda:self.rollback())
+        self.rollback_button.configure(fg_color="#200E3A")
+        self.rollback_button.place(anchor="center",relx=0.92, rely=0.78)
+        
+        self.SaveChanges_button = ctk.CTkButton(master=self,text='Save changes to Dataframe',width=200,height=40,command=lambda:self.saveChanges())
         self.SaveChanges_button.configure(fg_color="#200E3A")
-        self.SaveChanges_button.place(anchor="center",relx=0.92, rely=0.87)
+        self.SaveChanges_button.place(anchor="center",relx=0.92, rely=0.92)
         
         self.toplevel_window = None
         
@@ -115,7 +118,13 @@ class MissingValsFrame(ctk.CTkFrame):
     def saveChanges(self):
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             self.controller.frames[ppf.PrePFrame].df = self.controller.frames[ppf.PrePFrame].df_msv
-            tk.messagebox.showinfo('Info', 'Changes saved to Dataframe')
+            tk.messagebox.showinfo('Info', 'Changes saved to Dataframe, rollback not available.')
+            
+    def rollback(self):
+        if self.controller.frames[ppf.PrePFrame].df_msv is not None and self.controller.frames[ppf.PrePFrame].df is not None:
+            self.controller.frames[ppf.PrePFrame].df_msv = self.controller.frames[ppf.PrePFrame].df
+            self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df_msv)
+            tk.messagebox.showinfo('Info', 'Rollback successful')
             
     def printDFInfo(self):
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
@@ -148,13 +157,17 @@ class MissingValsFrame(ctk.CTkFrame):
                 self.controller.frames[ppf.PrePFrame].dfCols_num = self.controller.frames[ppf.PrePFrame].df_msv.select_dtypes(include='number').columns.tolist()
                 self.controller.frames[ppf.PrePFrame].dfCols_cat = self.controller.frames[ppf.PrePFrame].df_msv.select_dtypes(include='object').columns.tolist()
                 self.Cols_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols))
-                self.replaceMean_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols_num))
+                if len(self.controller.frames[ppf.PrePFrame].dfCols_num)>0:
+                    self.replaceMean_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols_num))
                 self.Cols_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
-                self.replaceMean_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols_num[-1]))
-                self.replaceMedian_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols_num))
-                self.replaceMedian_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols_num[-1]))
-                self.replaceMode_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols_cat))
-                self.replaceMode_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols_cat[-1]))
+                
+                if len(self.controller.frames[ppf.PrePFrame].dfCols_num) > 0:
+                    self.replaceMean_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols_num[-1]))
+                    self.replaceMedian_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols_num))
+                    self.replaceMedian_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols_num[-1]))
+                    self.replaceMode_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols_cat))
+                if len(self.controller.frames[ppf.PrePFrame].dfCols_cat) > 0:
+                    self.replaceMode_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols_cat[-1]))
                 self.replaceWithValue_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols))
                 self.replaceWithValue_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
                 self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df_msv)
@@ -182,7 +195,9 @@ class MissingValsFrame(ctk.CTkFrame):
             else:
                 tk.messagebox.showerror('Python Error', "No null values in the column.")
                 return
-            
+    
+    
+        
     def replaceWithMedian(self,col):
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             if self.controller.frames[ppf.PrePFrame].df_msv[col].isnull().values.any():

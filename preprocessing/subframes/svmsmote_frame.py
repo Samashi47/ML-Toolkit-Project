@@ -1,6 +1,6 @@
 import tkinter as tk
 import customtkinter as ctk
-import ppframe as ppf
+import preprocessing.ppframe as ppf
 from imblearn.over_sampling import SVMSMOTE
 
 class SVMSmoteFrame(ctk.CTkFrame):
@@ -8,7 +8,7 @@ class SVMSmoteFrame(ctk.CTkFrame):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,fg_color='transparent',corner_radius=20)
         
-        self.svmsmote = ctk.CTkLabel(self,font=('Arial',30), text="SVMSMOTE")
+        self.svmsmote = ctk.CTkLabel(self,font=('Arial',30), text="SVMSMOTE: ")
         self.svmsmote.place(anchor="center",relx=0.5, rely=0.07)
 
         # SVMSMOTE Frame
@@ -39,29 +39,37 @@ class SVMSmoteFrame(ctk.CTkFrame):
         self.outStep_entry = ctk.CTkEntry(self,width=190,height=30,placeholder_text="float - default = 0.5")
         self.outStep_entry.place(relx=0.65, rely=0.57, anchor="center")
         
-        self.import_file_button = ctk.CTkButton(master=self,text='Import...',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].getFile())
+        self.import_file_button = ctk.CTkButton(master=self,text='Import...',width=200,height=35,command=lambda:self.controller.frames[ppf.PrePFrame].getFile())
         self.import_file_button.configure(fg_color="#200E3A")
-        self.import_file_button.place(anchor="center",relx=0.92, rely=0.12)
+        self.import_file_button.place(anchor="center",relx=0.92, rely=0.08)
         
-        self.showEntireData_button = ctk.CTkButton(master=self,text='Load Entire Dataset',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df))
+        self.showEntireData_button = ctk.CTkButton(master=self,text='Load Entire Dataset',width=200,height=35,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df))
         self.showEntireData_button.configure(fg_color="#200E3A")
-        self.showEntireData_button.place(anchor="center",relx=0.92, rely=0.27)
+        self.showEntireData_button.place(anchor="center",relx=0.92, rely=0.2)
         
-        self.showTrainSplit_button = ctk.CTkButton(master=self,text='Load Original Train Data',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].X_train))
+        self.showTrainSplit_button = ctk.CTkButton(master=self,text='Load Original Train Data',width=200,height=35,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].X_train))
         self.showTrainSplit_button.configure(fg_color="#200E3A")
-        self.showTrainSplit_button.place(anchor="center",relx=0.92, rely=0.42)
+        self.showTrainSplit_button.place(anchor="center",relx=0.92, rely=0.32)
         
-        self.showTestSplit_button = ctk.CTkButton(master=self,text='Load Resampled Train Data',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].X_train_resampled))
+        self.showTestSplit_button = ctk.CTkButton(master=self,text='Load Resampled Train Data',width=200,height=35,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].X_train_resampled))
         self.showTestSplit_button.configure(fg_color="#200E3A")
-        self.showTestSplit_button.place(anchor="center",relx=0.92, rely=0.57)
+        self.showTestSplit_button.place(anchor="center",relx=0.92, rely=0.44)
         
-        self.showTargetTrainSplit_button = ctk.CTkButton(master=self,text='Load Original Train Target',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].y_train))
+        self.showTargetTrainSplit_button = ctk.CTkButton(master=self,text='Load Original Train Target',width=200,height=35,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].y_train))
         self.showTargetTrainSplit_button.configure(fg_color="#200E3A")
-        self.showTargetTrainSplit_button.place(anchor="center",relx=0.92, rely=0.72)
+        self.showTargetTrainSplit_button.place(anchor="center",relx=0.92, rely=0.56)
         
-        self.showTargetTestSplit_button = ctk.CTkButton(master=self,text='Load Resampled Train Traget',width=200,height=45,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].y_train_resampled))
+        self.showTargetTestSplit_button = ctk.CTkButton(master=self,text='Load Resampled Train Traget',width=200,height=35,command=lambda:self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].y_train_resampled))
         self.showTargetTestSplit_button.configure(fg_color="#200E3A")
-        self.showTargetTestSplit_button.place(anchor="center",relx=0.92, rely=0.87)
+        self.showTargetTestSplit_button.place(anchor="center",relx=0.92, rely=0.68)
+        
+        self.rollback_button = ctk.CTkButton(master=self,text='Rollback',width=200,height=35,command=lambda:self.rollback())
+        self.rollback_button.configure(fg_color="#200E3A")
+        self.rollback_button.place(anchor="center",relx=0.92, rely=0.8)
+        
+        self.SaveChanges_button = ctk.CTkButton(master=self,text='Save changes to Dataframe',width=200,height=35,command=lambda:self.saveChanges())
+        self.SaveChanges_button.configure(fg_color="#200E3A")
+        self.SaveChanges_button.place(anchor="center",relx=0.92, rely=0.92)
         
         self.svmsmote_button = ctk.CTkButton(master=self,text='Apply SVMSMOTE',font=('Arial',15),width=400,height=40,
                                           command=lambda:self.applySVMSMOTE(str(self.Strat_optMenu.get()),
@@ -72,7 +80,29 @@ class SVMSmoteFrame(ctk.CTkFrame):
                                                                         ))
         self.svmsmote_button.configure(fg_color="#200E3A")
         self.svmsmote_button.place(anchor="center",relx=0.5, rely=0.9)
+    
+    def saveChanges(self):
         
+        if self.controller.frames[ppf.PrePFrame].X_train is None or self.controller.frames[ppf.PrePFrame].y_train is None:
+            tk.messagebox.showerror('Python Error', "Please split the data first.")
+            return
+        
+        if self.controller.frames[ppf.PrePFrame].X_train is not None:
+            self.controller.frames[ppf.PrePFrame].X_train = self.controller.frames[ppf.PrePFrame].X_train_resampled
+            self.controller.frames[ppf.PrePFrame].y_train = self.controller.frames[ppf.PrePFrame].y_train_resampled
+            tk.messagebox.showinfo('Info', 'Changes saved to Dataframe, rollback not available.')
+            
+    def rollback(self):
+        
+        if self.controller.frames[ppf.PrePFrame].X_train is None or self.controller.frames[ppf.PrePFrame].y_train is None:
+            tk.messagebox.showerror('Python Error', "Please split the data first.")
+            return
+        
+        if self.controller.frames[ppf.PrePFrame].X_train_resampled is not None and self.controller.frames[ppf.PrePFrame].X_train is not None:
+            self.controller.frames[ppf.PrePFrame].X_train_resampled = self.controller.frames[ppf.PrePFrame].X_train
+            self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].X_train_resampled)
+            tk.messagebox.showinfo('Info', 'Rollback successful')
+    
     def applySVMSMOTE(self,sampling_strategy="auto",random_state=None,k_neighbors=5,m_neighbors=10, out_step=0.5):
         if self.controller.frames[ppf.PrePFrame].df is None :
             tk.messagebox.showerror('Python Error', "Please import a file first.")
