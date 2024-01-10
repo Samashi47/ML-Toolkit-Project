@@ -23,12 +23,11 @@ class MatplotlibFrame(tk.Frame):
         # X Label
         self.x_variable = tk.StringVar()
         self.x_dropdown = ttk.Combobox(self, width=30, height=30,
-                                          textvariable=self.x_variable)
+                                          textvariable=self.x_variable, state="readonly")
         self.x_dropdown.place(relx=0.40, rely=0.31, anchor="center")
 
         self.x_label = ctk.CTkLabel(self,font=('Arial',17), text="Select X Label: ")
         self.x_label.place(anchor="center",relx=0.177, rely=0.3)
-
 
         # Y Label
         self.y_label = tk.Label(self,font=('Arial',17), text="Select Y Label: ")
@@ -36,33 +35,45 @@ class MatplotlibFrame(tk.Frame):
 
         self.y_variable = tk.StringVar()
         self.y_dropdown = ttk.Combobox(self, width=30, height=30,
-                                          textvariable=self.y_variable)
+                                          textvariable=self.y_variable, state="readonly")
         self.y_dropdown.place(relx=0.40, rely=0.51, anchor="center")
+
+        # Z Label
+        self.z_variable = tk.Label(self, font=('Arial', 17), text="Select Z Label: ")
+        self.z_variable.place(anchor="center", relx=0.175, rely=0.7)
+
+        self.z_variable = tk.StringVar()
+        self.z_dropdown = ttk.Combobox(self, width=30, height=30, textvariable=self.z_variable, state="readonly")
+        self.z_dropdown.place(relx=0.40, rely=0.71, anchor="center")
 
         # Diagram Type
         self.diagram_label = tk.Label(self,font=('Arial',17), text="Select Diagram Type: ")
-        self.diagram_label.place(anchor="center",relx=0.177, rely=0.7)
+        self.diagram_label.place(anchor="center",relx=0.177, rely=0.9)
 
-        diagram_types = ["Line", "Scatter", "Bar", "Histogram", "Boxplot", "Pie", "Area", "Violin", "Heatmap", "3D",
+        diagram_types = ["Line", "Scatter", "Bar", "Histogram", "Boxplot", "Pie", "Area", "Violin", "3D",
                          "Error Bars"]
         self.diagram_variable = tk.StringVar()
         self.diagram_dropdown = ttk.Combobox(self,width=30,height=30,
-                                          textvariable=self.diagram_variable, values=diagram_types)
-        self.diagram_dropdown.place(relx=0.40, rely=0.71, anchor="center")
+                                          textvariable=self.diagram_variable, values=diagram_types, state="readonly")
+        self.diagram_dropdown.place(relx=0.40, rely=0.91, anchor="center")
 
         # Submit Button
         self.submit_button = ctk.CTkButton(self,width=400,height=45, text="Submit",  command=self.submit)
         self.submit_button.configure(fg_color="#200E3A")
-        self.submit_button.place(anchor="center",relx=0.74, rely=0.51)
-        # Save Button
-        self.submit_button = ctk.CTkButton(self, width=400, height=40, text="Save"
-                                           , command=self.save)
-        self.submit_button.configure(fg_color="#200E3A")
         self.submit_button.place(anchor="center",relx=0.74, rely=0.71)
-        #data
-        self.submit_button = ctk.CTkButton(self, width=400, height=40, text="Use the uploaded data", command=self.data)
-        self.submit_button.configure(fg_color="#200E3A")
-        self.submit_button.place(anchor="center",relx=0.74, rely=0.31)
+        # Save Button
+        self.save_button = ctk.CTkButton(self, width=400, height=40, text="Save"
+                                           , command=self.save)
+        self.save_button.configure(fg_color="#200E3A")
+        self.save_button.place(anchor="center",relx=0.74, rely=0.91)
+        #use old data Button
+        self.data_button = ctk.CTkButton(self, width=400, height=40, text="Use the uploaded Data", command=self.data)
+        self.data_button.configure(fg_color="#200E3A")
+        self.data_button.place(anchor="center",relx=0.74, rely=0.31)
+        # import Button
+        self.import_button = ctk.CTkButton(self, width=400, height=40, text="Import Data",command=lambda:self.controller.frames[ppf.PrePFrame].getFile())
+        self.import_button.configure(fg_color="#200E3A")
+        self.import_button.place(anchor="center", relx=0.74, rely=0.51)
 
 
 
@@ -77,10 +88,12 @@ class MatplotlibFrame(tk.Frame):
         columns = data.columns.tolist()
         self.x_dropdown['values'] = columns
         self.y_dropdown['values'] = columns
+        self.z_dropdown['values'] = columns
 
     def submit(self):
         x_label = self.x_variable.get()
         y_label = self.y_variable.get()
+        z_label = self.z_variable.get()
         diagram_type = self.diagram_variable.get()
 
         if x_label and y_label and diagram_type:
@@ -93,7 +106,9 @@ class MatplotlibFrame(tk.Frame):
 
             # Check if a visulateFrame instance was found
             if visulate_frame:
-                visulate_frame.plot_data_matplotlib(x_label, y_label, diagram_type)
+                # Clear the existing plot before plotting new data
+                visulate_frame.clear_plot()
+                visulate_frame.plot_data_matplotlib(x_label, y_label,z_label, diagram_type)
             else:
                 print("Error: visulateFrame instance not found in controller frames.")
         else:
