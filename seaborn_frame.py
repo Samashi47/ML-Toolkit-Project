@@ -66,17 +66,24 @@ class SeabornFrame(tk.Frame):
         self.import_button.configure(fg_color="#200E3A")
         self.import_button.place(anchor="center", relx=0.74, rely=0.51)
 
-    def populate_dropdowns(self):
+        # Populate dropdowns when the frame is created
+        self.bind("<Map>", self.populate_dropdowns)
+
+    def populate_dropdowns(self, event=None):
         # Get the reference to the PrePFrame
         prep_frame = self.controller.frames[ppf.PrePFrame]
 
         # Get the DataFrame from the PrePFrame
         data = prep_frame.df
+        if data is None:
+            print("Error: DataFrame is not loaded.")
+            return
+        else:
+            # Populate X and Y dropdowns with column names
+            columns = data.columns.tolist()
+            self.x_dropdown['values'] = columns
+            self.y_dropdown['values'] = columns
 
-        # Populate X and Y dropdowns with column names
-        columns = data.columns.tolist()
-        self.x_dropdown['values'] = columns
-        self.y_dropdown['values'] = columns
 
     def submit(self):
         x_label = self.x_variable.get()

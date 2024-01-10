@@ -74,10 +74,11 @@ class MatplotlibFrame(tk.Frame):
         self.import_button = ctk.CTkButton(self, width=400, height=40, text="Import Data",command=lambda:self.controller.frames[ppf.PrePFrame].getFile())
         self.import_button.configure(fg_color="#200E3A")
         self.import_button.place(anchor="center", relx=0.74, rely=0.51)
+        # Populate dropdowns when the frame is created
+        self.bind("<Map>", self.populate_dropdowns)
 
 
-
-    def populate_dropdowns(self):
+    def populate_dropdowns(self, event=None):
         # Get the reference to the PrePFrame
         prep_frame = self.controller.frames[ppf.PrePFrame]
 
