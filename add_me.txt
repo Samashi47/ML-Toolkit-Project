@@ -8,6 +8,8 @@ In models_frame.py
         self.rf_frame = rf.RfFrame(self.TopFrame, controller)
         self.rf_frame.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame, bordermode="outside")
 
+        self.knn_frame = knn.KnnFrame(self.TopFrame, controller)
+        self.knn_frame.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame, bordermode="outside")
 
         self.nb_frame = nb.NbFrame(self.TopFrame, controller)
         self.nb_frame.place(relx=0.01, rely=0, relwidth=0.98, relheight=0.98, in_=self.TopFrame, bordermode="outside")
