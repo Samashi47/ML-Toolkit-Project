@@ -4,10 +4,7 @@ import customtkinter as ctk
 import  modeling.models_frame as mf
 import preprocessing.ppframe as ppf
 from sklearn.svm import SVC
-from matplotlib import pyplot as plt
-from sklearn.metrics import roc_curve, auc
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
+from tkinter import messagebox
 
 
 class SvmFrame(ctk.CTkFrame):

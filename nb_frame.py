@@ -4,6 +4,8 @@ import customtkinter as ctk
 import  modeling.models_frame as mf
 import preprocessing.ppframe as ppf
 from sklearn.naive_bayes import MultinomialNB,GaussianNB
+from tkinter import messagebox
+
 
 class NbFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):

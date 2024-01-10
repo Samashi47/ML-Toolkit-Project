@@ -8,6 +8,8 @@ from matplotlib import pyplot as plt
 from sklearn.metrics import roc_curve, auc
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
+from tkinter import messagebox
+
 class RfFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
         self.controller = controller
