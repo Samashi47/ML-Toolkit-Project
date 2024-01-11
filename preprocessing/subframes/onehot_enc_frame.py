@@ -4,6 +4,7 @@ from sklearn.preprocessing import OneHotEncoder
 import pandas as pd
 import numpy as np
 import preprocessing.ppframe as ppf
+import visualization.vizualization_frame as vsf
 
 class OneHotEncFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -96,6 +97,10 @@ class OneHotEncFrame(ctk.CTkFrame):
             tk.messagebox.showerror('Python Error', "Please select a target column.")
             return
         
+        if self.controller.frames[ppf.PrePFrame].dfOHE[target].dtype != 'object':
+            tk.messagebox.showerror('Python Error', "Please select a column with dtype 'object'.")
+            return
+        
         X = self.controller.frames[ppf.PrePFrame].dfOHE.drop(target, axis=1)
         y = self.controller.frames[ppf.PrePFrame].dfOHE[target]
         
@@ -148,16 +153,77 @@ class OneHotEncFrame(ctk.CTkFrame):
         
         self.controller.frames[ppf.PrePFrame].dfOHE = X
         self.controller.frames[ppf.PrePFrame].dfOHE = pd.concat([self.controller.frames[ppf.PrePFrame].dfOHE, encoded_df], axis=1)
-        
+        self.target_optMenu.configure(values=self.controller.frames[ppf.PrePFrame].dfOHE.columns.tolist())
+        self.target_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfOHE.columns.tolist()[-1]))
         self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfOHE)
         
     def saveChanges(self):
         if self.controller.frames[ppf.PrePFrame].dfOHE is not None:
-            self.controller.frames[ppf.PrePFrame].df = self.controller.frames[ppf.PrePFrame].dfOHE
+            self.controller.frames[ppf.PrePFrame].df = self.controller.frames[ppf.PrePFrame].dfOHE.copy()
+            self.controller.frames[ppf.PrePFrame].dfPCA = self.controller.frames[ppf.PrePFrame].df.copy()
+            self.controller.frames[ppf.PrePFrame].dfNSC = self.controller.frames[ppf.PrePFrame].df.copy()
+            self.controller.frames[ppf.PrePFrame].dfLE = self.controller.frames[ppf.PrePFrame].df.copy()
+            self.controller.frames[ppf.PrePFrame].df_msv = self.controller.frames[ppf.PrePFrame].df.copy()
+            self.updateCols()
             tk.messagebox.showinfo('Info', 'Changes saved to Dataframe, rollback not available.')
             
     def rollback(self):
         if self.controller.frames[ppf.PrePFrame].dfOHE is not None and self.controller.frames[ppf.PrePFrame].df is not None:
-            self.controller.frames[ppf.PrePFrame].dfOHE = self.controller.frames[ppf.PrePFrame].df
+            self.controller.frames[ppf.PrePFrame].dfOHE = self.controller.frames[ppf.PrePFrame].df.copy()
             self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfOHE)
             tk.messagebox.showinfo('Info', 'Rollback successful')
+            
+            
+    def updateCols(self):
+        
+        self.controller.frames[ppf.PrePFrame].dfCols = self.controller.frames[ppf.PrePFrame].df.columns.tolist()
+        self.controller.frames[ppf.PrePFrame].dfCols_num = self.controller.frames[ppf.PrePFrame].df_msv.select_dtypes(include='number').columns.tolist()
+        self.controller.frames[ppf.PrePFrame].dfCols_cat = self.controller.frames[ppf.PrePFrame].df_msv.select_dtypes(include='object').columns.tolist()
+        
+        self.controller.frames[ppf.PrePFrame].train_test_split_frame.targetCol_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols))
+        self.controller.frames[ppf.PrePFrame].train_test_split_frame.targetCol_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
+        
+        self.controller.frames[ppf.PrePFrame].norm_sc_frame.nCols_optMenu.configure(values=self.controller.frames[ppf.PrePFrame].dfNSC.columns.tolist())
+        self.controller.frames[ppf.PrePFrame].norm_sc_frame.nCols_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfNSC.columns.tolist()[-1]))
+        self.controller.frames[ppf.PrePFrame].norm_sc_frame.scCols_optMenu.configure(values=self.controller.frames[ppf.PrePFrame].dfNSC.columns.tolist())
+        self.controller.frames[ppf.PrePFrame].norm_sc_frame.scCols_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfNSC.columns.tolist()[-1]))
+        self.controller.frames[ppf.PrePFrame].norm_sc_frame.mmCols_optMenu.configure(values=self.controller.frames[ppf.PrePFrame].dfNSC.columns.tolist())
+        self.controller.frames[ppf.PrePFrame].norm_sc_frame.mmCols_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfNSC.columns.tolist()[-1]))
+        self.controller.frames[ppf.PrePFrame].norm_sc_frame.mabsCols_optMenu.configure(values=self.controller.frames[ppf.PrePFrame].dfNSC.columns.tolist())
+        self.controller.frames[ppf.PrePFrame].norm_sc_frame.mabsCols_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfNSC.columns.tolist()[-1]))
+        
+        self.target_optMenu.configure(values=self.controller.frames[ppf.PrePFrame].dfOHE.columns.tolist())
+        self.target_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfOHE.columns.tolist()[-1]))  
+        
+        self.controller.frames[ppf.PrePFrame].le_frame.target_optMenu.configure(values=self.controller.frames[ppf.PrePFrame].dfLE.columns.tolist())
+        self.controller.frames[ppf.PrePFrame].le_frame.target_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfLE.columns.tolist()[-1]))
+        
+        self.controller.frames[ppf.PrePFrame].pca_frame.Target_optMenu.configure(values=self.controller.frames[ppf.PrePFrame].dfCols)
+        self.controller.frames[ppf.PrePFrame].pca_frame.Target_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
+        
+        self.controller.frames[vsf.visulizeFrame].matplotlib_frame.x_dropdown.configure(values=self.controller.frames[ppf.PrePFrame].dfCols)
+        self.controller.frames[vsf.visulizeFrame].matplotlib_frame.x_dropdown.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
+        self.controller.frames[vsf.visulizeFrame].matplotlib_frame.y_dropdown.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
+        self.controller.frames[vsf.visulizeFrame].matplotlib_frame.y_dropdown.configure(values=self.controller.frames[ppf.PrePFrame].dfCols)
+        self.controller.frames[vsf.visulizeFrame].matplotlib_frame.z_dropdown.configure(values=self.controller.frames[ppf.PrePFrame].dfCols)
+        self.controller.frames[vsf.visulizeFrame].matplotlib_frame.z_dropdown.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
+        
+        self.controller.frames[vsf.visulizeFrame].seaborn_frame.x_dropdown.configure(values=self.controller.frames[ppf.PrePFrame].dfCols)
+        self.controller.frames[vsf.visulizeFrame].seaborn_frame.x_dropdown.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
+        self.controller.frames[vsf.visulizeFrame].seaborn_frame.y_dropdown.configure(values=self.controller.frames[ppf.PrePFrame].dfCols)
+        self.controller.frames[vsf.visulizeFrame].seaborn_frame.y_dropdown.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
+        
+        self.controller.frames[ppf.PrePFrame].msv_frame.Cols_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols))
+        if len(self.controller.frames[ppf.PrePFrame].dfCols_num)>0:
+            self.controller.frames[ppf.PrePFrame].msv_frame.replaceMean_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols_num))
+        self.controller.frames[ppf.PrePFrame].msv_frame.Cols_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
+        
+        if len(self.controller.frames[ppf.PrePFrame].dfCols_num) > 0:
+            self.controller.frames[ppf.PrePFrame].msv_frame.replaceMean_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols_num[-1]))
+            self.controller.frames[ppf.PrePFrame].msv_frame.replaceMedian_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols_num))
+            self.controller.frames[ppf.PrePFrame].msv_frame.replaceMedian_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols_num[-1]))
+            self.controller.frames[ppf.PrePFrame].msv_frame.replaceMode_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols_cat))
+        if len(self.controller.frames[ppf.PrePFrame].dfCols_cat) > 0:
+            self.controller.frames[ppf.PrePFrame].msv_frame.replaceMode_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols_cat[-1]))
+        self.controller.frames[ppf.PrePFrame].msv_frame.replaceWithValue_optMenu.configure(values=list(self.controller.frames[ppf.PrePFrame].dfCols))
+        self.controller.frames[ppf.PrePFrame].msv_frame.replaceWithValue_optMenu.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))

@@ -31,12 +31,7 @@ class PrePFrame(ctk.CTkFrame):
         self.df_frame.grid(row=1,columnspan=4,padx=(10, 10), pady=(0, 10), in_=self, sticky="nsew")
         self.df_frame.grid_propagate(False)  # Fix: Set grid_propagate to False
 
-        self.df = None  # Initialize df as an instance variable
-        self.df_msv = None
-        self.dfPCA = None
-        self.dfNSC = None
-        self.dfOHE = None
-        self.dfLE = None
+        self.df, self.df_msv, self.dfPCA, self.dfNSC, self.dfOHE, self.dfLE= None, None, None, None, None, None
         self.X_train, self.X_test, self.y_train, self.y_test = None, None, None, None
         self.X_train_resampled, self.y_train_resampled = None, None
         self.dfCols,self.dfCols_num,self.dfCols_cat = None, None, None
@@ -197,6 +192,7 @@ class PrePFrame(ctk.CTkFrame):
             self.controller.frames[PrePFrame].norm_sc_frame.mmCols_optMenu.configure(variable=tk.StringVar(value=self.dfNSC.columns.tolist()[-1]))
             self.controller.frames[PrePFrame].norm_sc_frame.mabsCols_optMenu.configure(values=self.dfNSC.columns.tolist())
             self.controller.frames[PrePFrame].norm_sc_frame.mabsCols_optMenu.configure(variable=tk.StringVar(value=self.dfNSC.columns.tolist()[-1]))
+            
             self.controller.frames[PrePFrame].ohe_frame.target_optMenu.configure(values=self.dfOHE.columns.tolist())
             self.controller.frames[PrePFrame].ohe_frame.target_optMenu.configure(variable=tk.StringVar(value=self.dfOHE.columns.tolist()[-1]))           
             
@@ -204,9 +200,15 @@ class PrePFrame(ctk.CTkFrame):
             self.controller.frames[PrePFrame].le_frame.target_optMenu.configure(variable=tk.StringVar(value=self.dfLE.columns.tolist()[-1]))
             
             self.controller.frames[vsf.visulizeFrame].matplotlib_frame.x_dropdown.configure(values=self.dfCols)
+            self.controller.frames[vsf.visulizeFrame].matplotlib_frame.x_dropdown.configure(variable=tk.StringVar(value=self.dfCols[-1]))
+            self.controller.frames[vsf.visulizeFrame].matplotlib_frame.y_dropdown.configure(variable=tk.StringVar(value=self.dfCols[-1]))
             self.controller.frames[vsf.visulizeFrame].matplotlib_frame.y_dropdown.configure(values=self.dfCols)
+            self.controller.frames[vsf.visulizeFrame].matplotlib_frame.z_dropdown.configure(values=self.dfCols)
+            self.controller.frames[vsf.visulizeFrame].matplotlib_frame.z_dropdown.configure(variable=tk.StringVar(value=self.dfCols[-1]))
             
             self.controller.frames[vsf.visulizeFrame].seaborn_frame.x_dropdown.configure(values=self.dfCols)
+            self.controller.frames[vsf.visulizeFrame].seaborn_frame.x_dropdown.configure(variable=tk.StringVar(value=self.dfCols[-1]))
             self.controller.frames[vsf.visulizeFrame].seaborn_frame.y_dropdown.configure(values=self.dfCols)
+            self.controller.frames[vsf.visulizeFrame].seaborn_frame.y_dropdown.configure(variable=tk.StringVar(value=self.dfCols[-1]))
         else:
             return

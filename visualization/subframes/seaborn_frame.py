@@ -16,47 +16,42 @@ class SeabornFrame(ctk.CTkFrame):
         self.ax = self.figure.add_subplot(111)
 
         # Title
-        self.title_label = ctk.CTkLabel(self, text="Visualization using Seaborn", font=('Arial', 20, 'bold'))
-        self.title_label.place(relx=0.5, rely=0.1, anchor="center")
-
+        self.title_label = ctk.CTkLabel(self, text="Seaborn plotter", font=('Arial', 30))
+        self.title_label.place(relx=0.5, rely=0.08, anchor="center")
 
         # X Label
-        self.x_variable = tk.StringVar()
-        self.x_dropdown = ctk.CTkOptionMenu(self, width=30, height=30,values=[])
+        self.x_dropdown = ctk.CTkOptionMenu(self, width=150, height=30,values=[])
+        self.x_dropdown.configure(fg_color="#200E3A")
         self.x_dropdown.place(relx=0.40, rely=0.31, anchor="center")
 
         self.x_label = ctk.CTkLabel(self,font=('Arial',17), text="Select X Label: ")
-        self.x_label.place(anchor="center",relx=0.177, rely=0.3)
-
+        self.x_label.place(anchor="center",relx=0.16, rely=0.3)
 
         # Y Label
         self.y_label = ctk.CTkLabel(self,font=('Arial',17), text="Select Y Label: ")
-        self.y_label.place(anchor="center",relx=0.175, rely=0.5)
+        self.y_label.place(anchor="center",relx=0.16, rely=0.5)
 
-        self.y_variable = tk.StringVar()
-        self.y_dropdown = ctk.CTkOptionMenu(self, width=30, height=30,values=[])
+        self.y_dropdown = ctk.CTkOptionMenu(self, width=150, height=30,values=[])
+        self.y_dropdown.configure(fg_color="#200E3A")
         self.y_dropdown.place(relx=0.40, rely=0.51, anchor="center")
 
         # Diagram Type
         self.diagram_label = ctk.CTkLabel(self,font=('Arial',17), text="Select Diagram Type: ")
         self.diagram_label.place(anchor="center",relx=0.177, rely=0.7)
 
-        self.diagram_dropdown = ctk.CTkOptionMenu(self,width=30,height=30,values=["scatter", "barplot", "boxplot", "violinplot", "heatmap"])
+        self.diagram_dropdown = ctk.CTkOptionMenu(self,width=150,height=30,values=["scatter", "barplot", "boxplot", "violinplot", "heatmap"])
+        self.diagram_dropdown.configure(fg_color="#200E3A")
         self.diagram_dropdown.place(relx=0.40, rely=0.71, anchor="center")
 
         # Submit Button
-        self.submit_button = ctk.CTkButton(self,width=400,height=45, text="Submit",  command=self.submit)
+        self.submit_button = ctk.CTkButton(self,width=300,height=45, text="Visualize",  command=self.submit)
         self.submit_button.configure(fg_color="#200E3A")
-        self.submit_button.place(anchor="center",relx=0.74, rely=0.51)
+        self.submit_button.place(anchor="center",relx=0.85, rely=0.41)
         # Save Button
-        self.submit_button = ctk.CTkButton(self, width=400, height=40, text="Save"
+        self.save_button = ctk.CTkButton(self, width=300, height=40, text="Save"
                                            , command=self.save)
-        self.submit_button.configure(fg_color="#200E3A")
-        self.submit_button.place(anchor="center",relx=0.74, rely=0.71)
-        #data
-        self.submit_button = ctk.CTkButton(self, width=400, height=40, text="Use the uploaded data")
-        self.submit_button.configure(fg_color="#200E3A")
-        self.submit_button.place(anchor="center",relx=0.74, rely=0.31)
+        self.save_button.configure(fg_color="#200E3A")
+        self.save_button.place(anchor="center",relx=0.85, rely=0.61)
 
 
 

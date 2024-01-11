@@ -8,7 +8,7 @@ from matplotlib.figure import Figure
 from tkinter import messagebox
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_tkagg as tkagg
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import os
 
 
@@ -19,12 +19,9 @@ class visulizeFrame(ctk.CTkFrame):
         self.rowconfigure((0, 1), weight=1)
         self.columnconfigure((0), weight=1)
         self.path = tk.StringVar()
-        self.visualization_canvas = tk.Canvas(self)
-        self.figure_seaborn = Figure(figsize=(2, 2), dpi=50)
-        self.ax_seaborn = self.figure_seaborn.add_subplot(111)
-
-        self.figure_matplotlib = Figure(figsize=(2, 2), dpi=50)
-        self.ax_matplotlib = self.figure_matplotlib.add_subplot(111)
+        self.figure = Figure(figsize=(2, 2), dpi=50)
+        self.ax = self.figure.add_subplot(111)
+        self.ax_3d = None
 
         #TopFrame
         self.TopFrame = ctk.CTkFrame(self, width=self.winfo_width(), height=self.winfo_height() / 2, corner_radius=20)
@@ -33,85 +30,102 @@ class visulizeFrame(ctk.CTkFrame):
         # Create the canvas for visualization
         self.visualization_canvas = ctk.CTkCanvas(self, width=self.winfo_width(), height=self.winfo_height() / 2)
         self.visualization_canvas.grid(row=1, columnspan=4, padx=(10, 10), pady=(0, 10), in_=self, sticky="nsew")
-        self.visualization_canvas.grid_propagate(False)  # Fix: Set grid_propagate to False
+        
+        
+        # Create the initial canvas widget
+        self.canvas = FigureCanvasTkAgg(self.figure, master=self.visualization_canvas)
+        self.canvas_widget = self.canvas.get_tk_widget()
+        self.canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.visualization_canvas)
+        self.toolbar.update()
+        self.toolbar.pack(side=tk.LEFT, fill=tk.Y)  # Align the toolbar on the right side vertically
+        
         # Files: matplotlib_frame and seaborn_frame
         self.matplotlib_frame = mpl.MatplotlibFrame(self.TopFrame, self.controller)
         self.seaborn_frame = snsf.SeabornFrame(self.TopFrame, self.controller)
 
+    # Add a method to update the canvas with new plot data
+    def update_canvas(self):
+        self.canvas.draw()
+
+    def clear_plot(self):
+        self.ax.clear()
+        self.update_canvas()
+    
     def plot_data_seaborn(self, x_label, y_label, diagram_type):
         data = self.controller.frames[ppf.PrePFrame].df
-        # Clear the previous canvas widget
-        self.visualization_canvas.delete("all")
-
+        self.ax.clear()
         # Seaborn plot based on user selections
         if diagram_type == "scatter":
-            sns.scatterplot(x=x_label, y=y_label, data=data, ax=self.ax_seaborn)
+            sns.scatterplot(x=x_label, y=y_label, data=data, ax=self.ax)
         elif diagram_type == "barplot":
-            sns.barplot(x=x_label, y=y_label, data=data, ax=self.ax_seaborn)
+            sns.barplot(x=x_label, y=y_label, data=data, ax=self.ax)
         elif diagram_type == "boxplot":
-            sns.boxplot(x=x_label, y=y_label, data=data, ax=self.ax_seaborn)
+            sns.boxplot(x=x_label, y=y_label, data=data, ax=self.ax)
         elif diagram_type == "violinplot":
-            sns.violinplot(x=x_label, y=y_label, data=data, ax=self.ax_seaborn)
+            sns.violinplot(x=x_label, y=y_label, data=data, ax=self.ax)
         elif diagram_type == "heatmap":
             pivot_table = data.pivot_table(values=y_label, index=x_label, aggfunc="mean")
-            sns.heatmap(pivot_table, annot=True, cmap="YlGnBu", ax=self.ax_seaborn)
+            sns.heatmap(pivot_table, annot=True, cmap="YlGnBu", ax=self.ax)
         else:
             return
 
-        # Clear previous plot from the frame
-        for canvas_widget in self.visualization_canvas.winfo_children():
-            canvas_widget.destroy()
+        self.update_canvas()
 
-        # Draw the new plot on the canvas
-        canvas = FigureCanvasTkAgg(self.figure_seaborn, master=self.visualization_canvas)
-        canvas_widget = canvas.get_tk_widget()
-        canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
-    def plot_data_matplotlib(self, x_label, y_label, diagram_type):
+    def plot_data_matplotlib(self, x_axis, y_axis, z_axis, diagram_type):
         data = self.controller.frames[ppf.PrePFrame].df
 
-        # Clear the previous canvas widget
-        self.visualization_canvas.delete("all")
+        # Clear all existing subplots from the figure
+        for self.ax in self.figure.get_axes():
+            self.ax.remove()
 
-        # Matplotlib plot based on user selections
+        # Create a new subplot
+        self.ax = self.figure.add_subplot(111)
+        self.ax.set_xlabel(x_axis)
+        self.ax.set_ylabel(y_axis)
+        self.ax.set_title(diagram_type+" Diagram"+" of "+x_axis+" and "+y_axis)
+
         if diagram_type == "Line":
-            plt.plot(data[x_label], data[y_label])
+            # Line plot with legend for differentiating lines
+            self.ax.plot(data[x_axis], data[y_axis], label=z_axis)
+            self.ax.legend()
         elif diagram_type == "Scatter":
-            plt.scatter(data[x_label], data[y_label])
+            self.ax.scatter(data[x_axis], data[y_axis])
         elif diagram_type == "Bar":
-            plt.bar(data[x_label], data[y_label])
+            self.ax.bar(data[x_axis], data[y_axis])
         elif diagram_type == "Histogram":
-            plt.hist(data[y_label], bins='auto')
+            self.ax.hist(data[y_axis], bins='auto', alpha=0.7, rwidth=0.85)
         elif diagram_type == "Boxplot":
-            plt.boxplot(data[y_label])
+            self.ax.boxplot(data[y_axis])
         elif diagram_type == "Pie":
-            plt.pie(data[y_label], labels=data[x_label], autopct='%1.1f%%')
+            self.ax.pie(data[y_axis], labels=data[x_axis], autopct='%1.1f%%', startangle=90)
         elif diagram_type == "Area":
-            plt.fill_between(data[x_label], data[y_label], alpha=0.5)
+            self.ax.fill_between(data[x_axis], data[y_axis], label=y_axis, alpha=0.5)
+            if any(feature for feature in [x_axis, y_axis] if feature):
+                self.ax.legend()
         elif diagram_type == "Violin":
-            sns.violinplot(x=x_label, y=y_label, data=data)
-        elif diagram_type == "Heatmap":
-            pivot_table = data.pivot_table(values=y_label, index=x_label, aggfunc="mean")
-            sns.heatmap(pivot_table, annot=True, cmap="YlGnBu")
+            sns.violinplot(x=data[x_axis], y=data[y_axis], ax=self.ax)
+            self.ax.set_title("Violin Plot")
         elif diagram_type == "3D":
-            # Implement 3D plot logic
-            pass
+            if z_axis:
+            # Create a new subplot for the 3D plot
+                self.ax_3d = self.figure.add_subplot(111, projection='3d')
+                self.ax_3d.plot_trisurf(data[x_axis], data[y_axis], data[z_axis], cmap='viridis')
+                self.ax_3d.set_xlabel(x_axis, fontsize=30, rotation = 0)
+                self.ax_3d.set_ylabel(y_axis, fontsize=30, rotation = 0)
+                self.ax_3d.set_zlabel(z_axis, fontsize=30, rotation = 0)
+                self.ax_3d.set_title(diagram_type+" Diagram"+" of "+x_axis+" and "+y_axis+'and'+z_axis)
         elif diagram_type == "Error Bars":
-            # Implement error bars plot logic
-            pass
+            error = data[y_axis] * 0.1  # Replace with your error calculation logic
+            self.ax.errorbar(data[x_axis], data[y_axis], yerr=error)
         else:
-            return
+            # Handle the case where x_axis or y_axis is empty
+            self.ax.set_xlabel(x_axis)
+            self.ax.set_ylabel(y_axis)
+            self.ax.set_title(f"No data available for {diagram_type} plot")
 
-        self.visualization_canvas.delete("all")
-        # Clear previous plot from the frame
-        for widget in self.visualization_canvas.winfo_children():
-            widget.destroy()
-        # Draw the new plot on the canvas
-        canvas = FigureCanvasTkAgg(self.figure_matplotlib, master=self.visualization_canvas)
-        canvas_widget = canvas.get_tk_widget()
-        canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=False)
+        self.update_canvas()
 
     def save_diagram_as_png(self, filename="seaborn_diagram.png"):
         # Check if the save directory exists, create if not
@@ -123,3 +137,4 @@ class visulizeFrame(ctk.CTkFrame):
         self.figure.savefig(save_path, bbox_inches="tight")
 
         messagebox.showinfo("Save Successful", f"Diagram saved as {save_path}")
+        

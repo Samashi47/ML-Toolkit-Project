@@ -61,11 +61,15 @@ class LabelEncFrame(ctk.CTkFrame):
     
     def saveChanges(self):
         if self.controller.frames[ppf.PrePFrame].dfLE is not None:
-            self.controller.frames[ppf.PrePFrame].df = self.controller.frames[ppf.PrePFrame].dfLE
+            self.controller.frames[ppf.PrePFrame].df = self.controller.frames[ppf.PrePFrame].dfLE.copy()
+            self.controller.frames[ppf.PrePFrame].dfPCA = self.controller.frames[ppf.PrePFrame].df.copy()
+            self.controller.frames[ppf.PrePFrame].dfNSC = self.controller.frames[ppf.PrePFrame].df.copy()
+            self.controller.frames[ppf.PrePFrame].dfOHE = self.controller.frames[ppf.PrePFrame].df.copy()
+            self.controller.frames[ppf.PrePFrame].df_msv = self.controller.frames[ppf.PrePFrame].df.copy()
             tk.messagebox.showinfo('Info', 'Changes saved to Dataframe, rollback not available.')
             
     def rollback(self):
         if self.controller.frames[ppf.PrePFrame].dfLE is not None and self.controller.frames[ppf.PrePFrame].df is not None:
-            self.controller.frames[ppf.PrePFrame].dfLE = self.controller.frames[ppf.PrePFrame].df
+            self.controller.frames[ppf.PrePFrame].dfLE = self.controller.frames[ppf.PrePFrame].df.copy()
             self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfLE)
             tk.messagebox.showinfo('Info', 'Rollback successful')

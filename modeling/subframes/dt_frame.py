@@ -11,7 +11,7 @@ class DTFrame(ctk.CTkFrame):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,corner_radius=20,fg_color='transparent')
         
-        self.DT_label = ctk.CTkLabel(self,font=('Arial',20),text="Decision Trees: ")
+        self.DT_label = ctk.CTkLabel(self,font=('Arial',30),text="Decision Trees: ")
         self.DT_label.place(anchor="center",relx=0.5, rely=0.08)
         
         self.criterion_label = ctk.CTkLabel(self,font=('Arial',17),text="criterion: ")
@@ -58,8 +58,9 @@ class DTFrame(ctk.CTkFrame):
         
         self.maxfeatures_label = ctk.CTkLabel(self,font=('Arial',17),text="max_features: ")
         self.maxfeatures_label.place(anchor="center",relx=0.635, rely=0.3)
-        self.maxfeatures_entry = ctk.CTkEntry(self, width=190, height=30, placeholder_text="None")
-        self.maxfeatures_entry.place(relx=0.78, rely=0.31, anchor="center")
+        self.maxfeatures_optMenu = ctk.CTkOptionMenu(self, width=190, height=30,values=['None','auto', 'sqrt','log2'],dynamic_resizing=True)
+        self.maxfeatures_optMenu.configure(fg_color="#200E3A")
+        self.maxfeatures_optMenu.place(relx=0.78, rely=0.31, anchor="center")
         
         self.maxleafnodes_label = ctk.CTkLabel(self,font=('Arial',17),text="max_leaf_nodes: ")
         self.maxleafnodes_label.place(anchor="center",relx=0.645, rely=0.5)
@@ -92,7 +93,7 @@ class DTFrame(ctk.CTkFrame):
                                                                       str(self.minleaf_entry.get()),
                                                                       str(self.minsamplesleaf_entry.get()),
                                                                       str(self.minimpurity_entry.get()),
-                                                                      str(self.maxfeatures_entry.get()),
+                                                                      str(self.maxfeatures_optMenu.get()),
                                                                       str(self.maxleafnodes_entry.get()),
                                                                       str(self.ccpalpha_entry.get())
                                                                       ))
@@ -108,6 +109,9 @@ class DTFrame(ctk.CTkFrame):
             tk.messagebox.showerror('Python Error', "Please run train test split first.")
             return
         
+        if any(self.controller.frames[ppf.PrePFrame].X_test.dtypes == object):
+            tk.messagebox.showerror('Python Error', "Categorical columns represented as strings are not supported. Please convert them to numerical values.")
+            return
         
         if maxdepth == '':
             maxdepth = None
@@ -125,8 +129,10 @@ class DTFrame(ctk.CTkFrame):
             minsamplesleaf = 0.0
         if minimpurity == '':
             minimpurity = 0.0
-        if maxfeatures == '':
+            
+        if maxfeatures == 'None':
             maxfeatures = None
+            
         if maxleafnodes == '':
             maxleafnodes = None
         if ccpalpha == '':
@@ -174,15 +180,6 @@ class DTFrame(ctk.CTkFrame):
             except:
                 tk.messagebox.showerror('Python Error', "min_impurity_decrease must be a float.")
                 return
-            
-        if isinstance(maxfeatures, str) and maxfeatures != 'None':
-            try:
-                maxfeatures = int(maxfeatures)
-            except:
-                tk.messagebox.showerror('Python Error', "max_features must be an int or None.")
-                return
-        elif maxfeatures == 'None':
-            maxfeatures = None
         
         if isinstance(maxleafnodes, str) and maxleafnodes != 'None':
             try:
@@ -199,11 +196,36 @@ class DTFrame(ctk.CTkFrame):
             except:
                 tk.messagebox.showerror('Python Error', "ccp_alpha must be a float.")
                 return
-        
+        if maxdepth is not None and maxdepth < 0:
+            tk.messagebox.showerror('Python Error', "max_depth must be positive.")
+            return
+        if minsamples < 0:
+            tk.messagebox.showerror('Python Error', "min_samples_split must be positive.")
+            return
+        if minleaf < 0:
+            tk.messagebox.showerror('Python Error', "min_samples_leaf must be positive.")
+            return
+        if minsamplesleaf < 0:
+            tk.messagebox.showerror('Python Error', "min_weight_fraction_leaf must be positive.")
+            return
+        if minimpurity < 0:
+            tk.messagebox.showerror('Python Error', "min_impurity_decrease must be positive.")
+            return
+        if maxleafnodes is not None and maxleafnodes < 0:
+            tk.messagebox.showerror('Python Error', "max_leaf_nodes must be positive.")
+            return
+        if ccpalpha < 0:
+            tk.messagebox.showerror('Python Error', "ccp_alpha must be positive.")
+            return
         
         self.controller.frames[mf.ModelsFrame].model = DecisionTreeClassifier(criterion=criterion, splitter=splitter, max_depth=maxdepth, random_state=randomstate, min_samples_split=minsamples, min_samples_leaf=minleaf, min_weight_fraction_leaf=minsamplesleaf, min_impurity_decrease=minimpurity, max_features=maxfeatures, max_leaf_nodes=maxleafnodes, ccp_alpha=ccpalpha)
-        self.controller.frames[mf.ModelsFrame].model.fit(self.controller.frames[ppf.PrePFrame].X_train, self.controller.frames[ppf.PrePFrame].y_train)
-        tk.messagebox.showinfo('Info', 'Training successful')
+        try:
+            self.controller.frames[mf.ModelsFrame].model.fit(self.controller.frames[ppf.PrePFrame].X_train, self.controller.frames[ppf.PrePFrame].y_train)
+            tk.messagebox.showinfo('Info', 'Training successful')
+            return
+        except ValueError as e:
+            tk.messagebox.showerror('Python Error', str(e))
+            return
         
     def saveModel(self):
         if self.controller.frames[mf.ModelsFrame].model is None:

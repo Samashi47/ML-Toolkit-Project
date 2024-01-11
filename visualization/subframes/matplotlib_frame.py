@@ -15,70 +15,73 @@ class MatplotlibFrame(ctk.CTkFrame):
         self.ax = self.figure.add_subplot(111)
 
         # Title
-        self.title_label = ctk.CTkLabel(self, text="Visualization using matplotlib", font=('Arial', 20, 'bold'))
-        self.title_label.place(relx=0.5, rely=0.1, anchor="center")
-
+        self.title_label = ctk.CTkLabel(self, text="matplotlib plotter", font=('Arial', 30))
+        self.title_label.place(relx=0.5, rely=0.08, anchor="center")
 
         # X Label
-        self.x_variable = tk.StringVar()
-        self.x_dropdown = ctk.CTkOptionMenu(self, width=30, height=30,values=[])
-        self.x_dropdown.place(relx=0.40, rely=0.31, anchor="center")
-
         self.x_label = ctk.CTkLabel(self,font=('Arial',17), text="Select X Label: ")
-        self.x_label.place(anchor="center",relx=0.177, rely=0.3)
+        self.x_label.place(anchor="center",relx=0.1, rely=0.4)
+        self.x_dropdown = ctk.CTkOptionMenu(self, width=150, height=30,values=[])
+        self.x_dropdown.configure(fg_color="#200E3A")
+        self.x_dropdown.place(relx=0.25, rely=0.41, anchor="center")
 
 
         # Y Label
         self.y_label = ctk.CTkLabel(self,font=('Arial',17), text="Select Y Label: ")
-        self.y_label.place(anchor="center",relx=0.175, rely=0.5)
+        self.y_label.place(anchor="center",relx=0.1, rely=0.6)
+        self.y_dropdown = ctk.CTkOptionMenu(self, width=150, height=30,values=[])
+        self.y_dropdown.configure(fg_color="#200E3A")
+        self.y_dropdown.place(relx=0.25, rely=0.61, anchor="center")
 
-        self.y_variable = tk.StringVar()
-        self.y_dropdown = ctk.CTkOptionMenu(self, width=30, height=30,values=[])
-        self.y_dropdown.place(relx=0.40, rely=0.51, anchor="center")
-
+        
+        # Z Label
+        self.z_label = ctk.CTkLabel(self, font=('Arial', 17), text="Select Z Label: ")
+        self.z_label.place(anchor="center", relx=0.402, rely=0.4)
+        self.z_dropdown = ctk.CTkOptionMenu(self, width=150, height=30, values=[])
+        self.z_dropdown.configure(fg_color="#200E3A")
+        self.z_dropdown.place(relx=0.62, rely=0.41, anchor="center")
+        
         # Diagram Type
         self.diagram_label = ctk.CTkLabel(self,font=('Arial',17), text="Select Diagram Type: ")
-        self.diagram_label.place(anchor="center",relx=0.177, rely=0.7)
-
-        diagram_types = ["Line", "Scatter", "Bar", "Histogram", "Boxplot", "Pie", "Area", "Violin", "Heatmap", "3D",
+        self.diagram_label.place(anchor="center",relx=0.42, rely=0.6)
+        diagram_types = ["Line", "Scatter", "Bar", "Histogram", "Boxplot", "Pie", "Area", "Violin", "3D",
                          "Error Bars"]
-        self.diagram_variable = tk.StringVar()
-        self.diagram_dropdown = ctk.CTkOptionMenu(self,width=30,height=30,values=diagram_types)
-        self.diagram_dropdown.place(relx=0.40, rely=0.71, anchor="center")
+        self.diagram_dropdown = ctk.CTkOptionMenu(self,width=150,height=30,values=diagram_types)
+        self.diagram_dropdown.configure(fg_color="#200E3A")
+        self.diagram_dropdown.place(relx=0.62, rely=0.61, anchor="center")
 
         # Submit Button
-        self.submit_button = ctk.CTkButton(self,width=400,height=45, text="Submit",  command=self.submit)
+        self.submit_button = ctk.CTkButton(self,width=300,height=45, text="Visualize",  command=self.submit)
         self.submit_button.configure(fg_color="#200E3A")
-        self.submit_button.place(anchor="center",relx=0.74, rely=0.51)
+        self.submit_button.place(anchor="center",relx=0.85, rely=0.41)
         # Save Button
-        self.submit_button = ctk.CTkButton(self, width=400, height=40, text="Save"
+        self.save_button = ctk.CTkButton(self, width=300, height=40, text="Save"
                                            , command=self.save)
-        self.submit_button.configure(fg_color="#200E3A")
-        self.submit_button.place(anchor="center",relx=0.74, rely=0.71)
-        #data
-        self.submit_button = ctk.CTkButton(self, width=400, height=40, text="Use the uploaded data")
-        self.submit_button.configure(fg_color="#200E3A")
-        self.submit_button.place(anchor="center",relx=0.74, rely=0.31)
+        self.save_button.configure(fg_color="#200E3A")
+        self.save_button.place(anchor="center",relx=0.85, rely=0.61)
 
 
     def submit(self):
         x_label = self.x_dropdown.get()
         y_label = self.y_dropdown.get()
-        diagram_type = self.diagram_variable.get()
+        z_label = self.z_dropdown.get()
+        diagram_type = self.diagram_dropdown.get()
 
-        if x_label and y_label and diagram_type:
-            # Find the visulizeFrame instance in the controller's frames
+        if (x_label is not None) and (y_label is not None) and (diagram_type is not None):
+            # Find the visulateFrame instance in the controller's frames
             visulate_frame = None
             for frame in self.controller.frames.values():
                 if isinstance(frame, vsf.visulizeFrame):
                     visulate_frame = frame
                     break
 
-            # Check if a visulizeFrame instance was found
+            # Check if a visulateFrame instance was found
             if visulate_frame:
-                visulate_frame.plot_data_matplotlib(x_label, y_label, diagram_type)
+                # Clear the existing plot before plotting new data
+                visulate_frame.clear_plot()
+                visulate_frame.plot_data_matplotlib(x_label, y_label,z_label, diagram_type)
             else:
-                print("Error: visulizeFrame instance not found in controller frames.")
+                print("Error: visulateFrame instance not found in controller frames.")
         else:
             messagebox.showerror("Error", "Please select X Label, Y Label, and Diagram Type.")
 

@@ -40,11 +40,11 @@ class App(ctk.CTk):
         
         Model_menu = menu.menu_bar(text="Modeling", tearoff=0,)
         Model_menu.add_command(label="DecisionTreeClassifier",command=lambda:self.show_frame("dt",mf.ModelsFrame))
-        Model_menu.add_command(label="RandomForestClassifier")
-        Model_menu.add_command(label="KNeighborsClassifier")
-        Model_menu.add_command(label="SVM")
-        Model_menu.add_command(label="Naive Bayes")
-        Model_menu.add_command(label="Linear Regression")
+        Model_menu.add_command(label="RandomForestClassifier",command=lambda:self.show_frame("rf",mf.ModelsFrame))
+        Model_menu.add_command(label="KNNClassifier",command=lambda:self.show_frame("knn",mf.ModelsFrame))
+        Model_menu.add_command(label="SVM",command=lambda:self.show_frame("svm",mf.ModelsFrame))
+        Model_menu.add_command(label="Naive Bayes",command=lambda:self.show_frame("nb",mf.ModelsFrame))
+        Model_menu.add_command(label="Logistic Regression",command=lambda:self.show_frame("lr",mf.ModelsFrame))
         
         Viz_menu = menu.menu_bar(text="Visualization", tearoff=0,)
         Viz_menu.add_command(label="Seaborn",command=lambda:self.show_frame("sns",vsf.visulizeFrame))
@@ -89,6 +89,11 @@ class App(ctk.CTk):
             "ohe": self.frames[ppf.PrePFrame].ohe_frame,
             "le": self.frames[ppf.PrePFrame].le_frame,
             "dt": self.frames[mf.ModelsFrame].dt_frame,
+            "rf": self.frames[mf.ModelsFrame].rf_frame,
+            "knn": self.frames[mf.ModelsFrame].knn_frame,
+            "svm": self.frames[mf.ModelsFrame].svm_frame,
+            "nb": self.frames[mf.ModelsFrame].nb_frame,
+            "lr": self.frames[mf.ModelsFrame].lr_frame,
             "sns": self.frames[vsf.visulizeFrame].seaborn_frame,
             "mpl": self.frames[vsf.visulizeFrame].matplotlib_frame
         }
