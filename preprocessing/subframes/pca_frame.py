@@ -7,6 +7,40 @@ import visualization.vizualization_frame as vsf
 
 
 class PCAFrame(ctk.CTkFrame):
+    """
+    A custom frame for performing Principal Component Analysis (PCA) on a dataset.
+
+    Args:
+        parent: The parent widget.
+        controller: The controller object.
+
+    Attributes:
+        pca_label: The label for displaying "PCA:".
+        components_label: The label for displaying "n_components:".
+        components_entry: The entry field for specifying the number of components.
+        copy_label: The label for displaying "copy:".
+        copy_optMenu: The option menu for selecting the copy option.
+        Target_label: The label for displaying "Target:".
+        Target_optMenu: The option menu for selecting the target column.
+        whiten_label: The label for displaying "whiten:".
+        whiten_optMenu: The option menu for selecting the whiten option.
+        svd_solver_label: The label for displaying "svd_solver:".
+        svd_solver_optMenu: The option menu for selecting the svd_solver option.
+        rand_state_label: The label for displaying "random_state:".
+        rand_state_entry: The entry field for specifying the random state.
+        import_file_button: The button for importing a file.
+        showEntireData_button: The button for loading the original dataset.
+        before_pca_button: The button for loading the PCA dataframe.
+        rollback_button: The button for rolling back changes.
+        saveChanges_button: The button for saving changes to the dataframe.
+        pca_button: The button for applying PCA.
+
+    Methods:
+        applyPCA: Applies PCA to the dataset.
+        saveChanges: Saves the changes made to the dataframe.
+        rollback: Rolls back the changes made to the dataframe.
+        updateCols: Updates the columns in the dataframe.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent, fg_color='transparent', corner_radius=20)
@@ -82,7 +116,20 @@ class PCAFrame(ctk.CTkFrame):
 
 
     def applyPCA(self,comp=None,Target=None,cop="True",wh="False",svd="auto",over="10"):
+        """
+        Apply Principal Component Analysis (PCA) to the data.
 
+        Args:
+            comp (int or None): Number of components to keep. If None, all components are kept.
+            Target (str): Name of the target column.
+            cop (str): Whether to make a copy of the input data. Default is "True".
+            wh (str): Whether to whiten the data. Default is "False".
+            svd (str or int): SVD solver to use. Default is "auto".
+            over (int or None): Random state for the SVD solver. Default is "10".
+
+        Returns:
+            None
+        """
         if self.controller.frames[ppf.PrePFrame].df is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
@@ -93,7 +140,6 @@ class PCAFrame(ctk.CTkFrame):
 
         if self.controller.frames[ppf.PrePFrame].X_train is not None or self.controller.frames[ppf.PrePFrame].y_train is not None:
             tk.messagebox.showerror('Python Error', "Please Note that the changes are not saved in training split (redo the train test split).")
-            return
         
         X = self.controller.frames[ppf.PrePFrame].df.drop(Target, axis=1)
         y = self.controller.frames[ppf.PrePFrame].df[Target]
@@ -129,8 +175,11 @@ class PCAFrame(ctk.CTkFrame):
 
 
         pca = PCA(n_components=comp,copy=cop,whiten=wh,svd_solver=svd,random_state=over)
-        
-        self.controller.frames[ppf.PrePFrame].dfPCA = pd.DataFrame(pca.fit_transform(X),columns=[f"{i+1}" for i in range(pca.fit_transform(X).shape[1])])
+        try:
+            self.controller.frames[ppf.PrePFrame].dfPCA = pd.DataFrame(pca.fit_transform(X),columns=[f"{i+1}" for i in range(pca.fit_transform(X).shape[1])])
+        except ValueError as e:
+            tk.messagebox.showerror('Python Error', e)
+            return
         self.controller.frames[ppf.PrePFrame].dfPCA[Target] = y
 
         tk.messagebox.showinfo('Info', 'PCA applied Successfully: \nDF shape without PCA : {} \nDF shape with PCA: {} '.format(self.controller.frames[ppf.PrePFrame].df.shape,self.controller.frames[ppf.PrePFrame].dfPCA.shape))

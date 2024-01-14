@@ -1,13 +1,32 @@
-import tkinter as tk
-from tkinter import ttk
 import customtkinter as ctk
 from tkinter import messagebox
-import preprocessing.ppframe as ppf
 from matplotlib.figure import Figure
 import visualization.vizualization_frame as vsf
 
 
 class SeabornFrame(ctk.CTkFrame):
+    """
+    A custom frame class for creating a Seaborn plotter GUI.
+
+    Attributes:
+        controller (object): The controller object for managing the frames.
+        figure (matplotlib.figure.Figure): The figure object for the plot.
+        ax (matplotlib.axes.Axes): The axes object for the plot.
+        title_label (ctk.CTkLabel): The label for the title of the plot.
+        x_dropdown (ctk.CTkOptionMenu): The dropdown menu for selecting the X label.
+        x_label (ctk.CTkLabel): The label for the X label selection.
+        y_label (ctk.CTkLabel): The label for the Y label selection.
+        y_dropdown (ctk.CTkOptionMenu): The dropdown menu for selecting the Y label.
+        diagram_label (ctk.CTkLabel): The label for the diagram type selection.
+        diagram_dropdown (ctk.CTkOptionMenu): The dropdown menu for selecting the diagram type.
+        submit_button (ctk.CTkButton): The button for submitting the plot.
+        save_button (ctk.CTkButton): The button for saving the plot.
+
+    Methods:
+        __init__(self, parent, controller): Initializes the SeabornFrame object.
+        submit(self): Submits the plot with the selected labels and diagram type.
+        save(self): Saves the plot as a PNG file.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,corner_radius=20,fg_color='transparent')
@@ -16,7 +35,7 @@ class SeabornFrame(ctk.CTkFrame):
         self.ax = self.figure.add_subplot(111)
 
         # Title
-        self.title_label = ctk.CTkLabel(self, text="Seaborn plotter", font=('Arial', 30))
+        self.title_label = ctk.CTkLabel(self, text="Seaborn Plotter", font=('Arial', 30))
         self.title_label.place(relx=0.5, rely=0.08, anchor="center")
 
         # X Label
@@ -53,9 +72,16 @@ class SeabornFrame(ctk.CTkFrame):
         self.save_button.configure(fg_color="#200E3A")
         self.save_button.place(anchor="center",relx=0.85, rely=0.61)
 
-
-
     def submit(self):
+        """
+        Submits the selected X Label, Y Label, and Diagram Type to plot the data using seaborn.
+        
+        Parameters:
+        - None
+        
+        Returns:
+        - None
+        """
         x_label = self.x_dropdown.get()
         y_label = self.y_dropdown.get()
         diagram_type = self.diagram_dropdown.get()

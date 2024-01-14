@@ -3,9 +3,44 @@ import customtkinter as ctk
 from imblearn.under_sampling import CondensedNearestNeighbour
 import preprocessing.ppframe as ppf
 
-
 class CNNFrame(ctk.CTkFrame):
+    """
+    This class represents a frame for applying Condensed Nearest Neighbour (CNN) algorithm.
+
+    Attributes:
+        controller (object): The parent controller object.
+        cnn_label (ctk.CTkLabel): The label for CNN.
+        RandomS_label (ctk.CTkLabel): The label for random_state.
+        random_state_entry (ctk.CTkEntry): The entry for random_state.
+        Shuffle_label (ctk.CTkLabel): The label for sampling_strategy.
+        Shuffle_optMenu (ctk.CTkOptionMenu): The option menu for sampling_strategy.
+        Neighbors_label (ctk.CTkLabel): The label for n_neighbors.
+        n_neighbors_entry (ctk.CTkEntry): The entry for n_neighbors.
+        Seeds_label (ctk.CTkLabel): The label for n_seeds_S.
+        n_seeds_S_entry (ctk.CTkEntry): The entry for n_seeds_S.
+        import_file_button (ctk.CTkButton): The button for importing a file.
+        showEntireData_button (ctk.CTkButton): The button for loading the entire dataset.
+        showTrainSplit_button (ctk.CTkButton): The button for loading the train split.
+        showTrainSplitU_button (ctk.CTkButton): The button for loading the resampled train data.
+        showTargetTrainSplit_button (ctk.CTkButton): The button for loading the train target.
+        showTargetTestSplitU_button (ctk.CTkButton): The button for loading the resampled train target.
+        rollback_button (ctk.CTkButton): The button for rollback.
+        SaveChanges_button (ctk.CTkButton): The button for saving changes to the dataframe.
+        split_button (ctk.CTkButton): The button for applying CNN.
+
+    Methods:
+        saveChanges: Saves the changes made to the dataframe.
+        rollback: Rolls back the changes made to the dataframe.
+        applyCNN: Applies the CNN algorithm to the data.
+    """
     def __init__(self, parent, controller):
+        """
+        Initializes the CNNFrame.
+
+        Args:
+            parent (object): The parent object.
+            controller (object): The parent controller object.
+        """
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent, fg_color='transparent', corner_radius=20)
 
@@ -75,7 +110,9 @@ class CNNFrame(ctk.CTkFrame):
         self.split_button.place(anchor="center", relx=0.5, rely=0.9)
 
     def saveChanges(self):
-        
+        """
+        Saves the changes made to the dataframe.
+        """
         if self.controller.frames[ppf.PrePFrame].X_train is None or self.controller.frames[ppf.PrePFrame].y_train is None:
             tk.messagebox.showerror('Python Error', "Please split the data first.")
             return
@@ -86,7 +123,9 @@ class CNNFrame(ctk.CTkFrame):
             tk.messagebox.showinfo('Info', 'Changes saved to Dataframe, rollback not available.')
             
     def rollback(self):
-        
+        """
+        Rolls back the changes made to the dataframe.
+        """
         if self.controller.frames[ppf.PrePFrame].X_train is None or self.controller.frames[ppf.PrePFrame].y_train is None:
             tk.messagebox.showerror('Python Error', "Please split the data first.")
             return
@@ -97,7 +136,15 @@ class CNNFrame(ctk.CTkFrame):
             tk.messagebox.showinfo('Info', 'Rollback successful')
             
     def applyCNN(self,sampling_s='auto',random_s=None,n_n=None,n_s=1):
+        """
+        Applies the CNN algorithm to the data.
 
+        Args:
+            sampling_s (str): The sampling strategy. Default is 'auto'.
+            random_s (str or None): The random state. Default is None.
+            n_n (str or None): The number of neighbors. Default is None.
+            n_s (str or int): The number of seeds. Default is 1.
+        """
         if self.controller.frames[ppf.PrePFrame].df is None :
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
@@ -142,6 +189,9 @@ class CNNFrame(ctk.CTkFrame):
                 return
 
         CNN = CondensedNearestNeighbour(sampling_strategy=sampling_s, random_state=random_s,n_neighbors=n_n,n_seeds_S=n_s)
-        self.controller.frames[ppf.PrePFrame].X_train_resampled, self.controller.frames[ppf.PrePFrame].y_train_resampled=CNN.fit_resample(X,y)
-
+        try:
+            self.controller.frames[ppf.PrePFrame].X_train_resampled, self.controller.frames[ppf.PrePFrame].y_train_resampled=CNN.fit_resample(X,y)
+        except ValueError as e:
+            tk.messagebox.showerror('Python Error', e)
+            return
         tk.messagebox.showinfo('Info', 'CNN applied Successfully: \nX_train shape: {} \nX_train_resampled shape: {} \ny_train shape: {} \ny_train_resampled shape: {}'.format(self.controller.frames[ppf.PrePFrame].X_train.shape,self.controller.frames[ppf.PrePFrame].X_train_resampled.shape,self.controller.frames[ppf.PrePFrame].y_train.shape,self.controller.frames[ppf.PrePFrame].y_train_resampled.shape))

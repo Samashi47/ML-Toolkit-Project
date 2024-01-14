@@ -5,6 +5,37 @@ import preprocessing.ppframe as ppf
 
 
 class TrainTestSplitFrame(ctk.CTkFrame):
+    """
+    A custom frame for performing train-test split on data.
+
+    Args:
+        parent: The parent widget.
+        controller: The controller object.
+
+    Attributes:
+        tts_label: A label widget for displaying the title.
+        TrainS_label: A label widget for displaying the train size label.
+        train_size_entry: An entry widget for entering the train size.
+        TestS_label: A label widget for displaying the test size label.
+        test_size_entry: An entry widget for entering the test size.
+        RandS_label: A label widget for displaying the random state label.
+        RandS_entry: An entry widget for entering the random state.
+        Shuffle_label: A label widget for displaying the shuffle label.
+        Shuffle_optMenu: An option menu widget for selecting shuffle option.
+        TargetCol_label: A label widget for displaying the target column label.
+        targetCol_optMenu: An option menu widget for selecting the target column.
+        import_file_button: A button widget for importing a file.
+        showEntireData_button: A button widget for displaying the entire dataset.
+        showTrainSplit_button: A button widget for displaying the train split.
+        showTestSplit_button: A button widget for displaying the test split.
+        showTargetTrainSplit_button: A button widget for displaying the train target.
+        showTargetTestSplit_button: A button widget for displaying the test target.
+        split_button: A button widget for splitting the data.
+
+    Methods:
+        __init__: Initializes the TrainTestSplitFrame.
+        splitData: Splits the data into training and testing sets.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,fg_color='transparent',corner_radius=20)
@@ -75,6 +106,19 @@ class TrainTestSplitFrame(ctk.CTkFrame):
         self.split_button.place(anchor="center",relx=0.5, rely=0.9)
         
     def splitData(self,target,test_size=0.2,train_size=0.8,random_state=42,shuffle=True):
+        """
+        Split the data into training and testing sets based on the specified target column.
+
+        Parameters:
+        - target (str): The name of the target column.
+        - test_size (float or str): The proportion of the dataset to include in the test split. Default is 0.2.
+        - train_size (float or str): The proportion of the dataset to include in the train split. Default is 0.8.
+        - random_state (int or str): Controls the shuffling applied to the data before splitting. Default is 42.
+        - shuffle (bool): Whether or not to shuffle the data before splitting. Default is True.
+
+        Returns:
+        None
+        """
         if self.controller.frames[ppf.PrePFrame].df is None :
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return

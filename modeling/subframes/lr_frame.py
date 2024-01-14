@@ -6,6 +6,48 @@ import preprocessing.ppframe as ppf
 from sklearn.linear_model import LogisticRegression
 
 class LRFrame(ctk.CTkFrame):
+    """
+    LRFrame is a custom frame class that represents the user interface for Logistic Regression model configuration.
+    It inherits from ctk.CTkFrame.
+
+    Args:
+        parent: The parent widget.
+        controller: The controller object.
+
+    Attributes:
+        lr (ctk.CTkLabel): The label widget displaying the title "Logistic Regression".
+        penalty_label (ctk.CTkLabel): The label widget for the "penalty" option.
+        penalty_optMenu (ctk.CTkOptionMenu): The option menu widget for selecting the penalty type.
+        dual_label (ctk.CTkLabel): The label widget for the "dual" option.
+        dual_optMenu (ctk.CTkOptionMenu): The option menu widget for selecting the dual value.
+        tol_label (ctk.CTkLabel): The label widget for the "tol" option.
+        tol_entry (ctk.CTkEntry): The entry widget for entering the tolerance value.
+        randomstate_label (ctk.CTkLabel): The label widget for the "random_state" option.
+        randomstate_entry (ctk.CTkEntry): The entry widget for entering the random state value.
+        c_label (ctk.CTkLabel): The label widget for the "C" option.
+        c_entry (ctk.CTkEntry): The entry widget for entering the C value.
+        fitintercept_label (ctk.CTkLabel): The label widget for the "fit_intercept" option.
+        fitintercept_optMenu (ctk.CTkOptionMenu): The option menu widget for selecting the fit intercept value.
+        intercept_scaling_label (ctk.CTkLabel): The label widget for the "intercept_scaling" option.
+        intercept_scaling_entry (ctk.CTkEntry): The entry widget for entering the intercept scaling value.
+        multiclass_label (ctk.CTkLabel): The label widget for the "multi_class" option.
+        multiclass_optMenu (ctk.CTkOptionMenu): The option menu widget for selecting the multi class value.
+        class_weight_label (ctk.CTkLabel): The label widget for the "class_weight" option.
+        class_weight_optMenu (ctk.CTkOptionMenu): The option menu widget for selecting the class weight value.
+        solver_label (ctk.CTkLabel): The label widget for the "solver" option.
+        solver_optMenu (ctk.CTkOptionMenu): The option menu widget for selecting the solver value.
+        maxi_iter_label (ctk.CTkLabel): The label widget for the "max_iter" option.
+        maxi_iter_entry (ctk.CTkEntry): The entry widget for entering the maximum number of iterations value.
+        warm_start_label (ctk.CTkLabel): The label widget for the "warm_start" option.
+        warm_start_optMenu (ctk.CTkOptionMenu): The option menu widget for selecting the warm start value.
+        train_button (ctk.CTkButton): The button widget for training the model.
+        import_file_button (ctk.CTkButton): The button widget for importing a file.
+        evaluateModel_button (ctk.CTkButton): The button widget for evaluating the model.
+        SaveChanges_button (ctk.CTkButton): The button widget for saving the model.
+
+    Methods:
+        trainLR: Trains the Logistic Regression model with the selected configuration.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent, fg_color='transparent', corner_radius=20)
@@ -110,6 +152,30 @@ class LRFrame(ctk.CTkFrame):
         self.SaveChanges_button.place(anchor="center",relx=0.93, rely=0.72)
         
     def trainLR(self, penalty, dual, tol, c, fit_intercept, intercept_scaling, class_weight, random_state, solver, max_iter, multi_class, warm_start):
+        """
+        Trains a Logistic Regression model with the specified parameters.
+
+        Args:
+            penalty (str): The type of regularization penalty. Can be 'l1', 'l2', 'elasticnet', or 'none'.
+            dual (str): Dual or primal formulation. Can be 'True' or 'False'.
+            tol (float or str): Tolerance for stopping criteria. If a string is provided, it will be converted to a float.
+            c (float or str): Inverse of regularization strength. If a string is provided, it will be converted to a float.
+            fit_intercept (str): Specifies if a constant (intercept) should be added to the decision function. Can be 'True' or 'False'.
+            intercept_scaling (float or str): Useful only when the solver 'liblinear' is used and self.fit_intercept is set to 'True'. If a string is provided, it will be converted to a float.
+            class_weight (str): Weights associated with classes. Can be 'balanced', 'None', or a dictionary of class weights.
+            random_state (int or str): Seed used by the random number generator. If a string is provided, it will be converted to an integer.
+            solver (str): Algorithm to use in the optimization problem. Can be 'newton-cg', 'lbfgs', 'liblinear', 'sag', or 'saga'.
+            max_iter (int or str): Maximum number of iterations taken for the solvers to converge. If a string is provided, it will be converted to an integer.
+            multi_class (str): Strategy for handling multiple classes. Can be 'ovr', 'multinomial', or 'auto'.
+            warm_start (str): When set to 'True', reuse the solution of the previous call to fit as initialization. Can be 'True' or 'False'.
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: If any of the input parameters are invalid.
+
+        """
         if self.controller.frames[ppf.PrePFrame].df is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return

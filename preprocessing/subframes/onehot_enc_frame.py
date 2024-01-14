@@ -7,6 +7,39 @@ import preprocessing.ppframe as ppf
 import visualization.vizualization_frame as vsf
 
 class OneHotEncFrame(ctk.CTkFrame):
+    """
+    A class representing a frame for applying One-Hot Encoding.
+
+    Attributes:
+        controller (object): The controller object.
+        onehotenc_label (ctk.CTkLabel): The label for One Hot Encoder.
+        drop_label (ctk.CTkLabel): The label for drop option.
+        drop_optMenu (ctk.CTkOptionMenu): The option menu for drop option.
+        sparse_label (ctk.CTkLabel): The label for sparse_output option.
+        sparse_optMenu (ctk.CTkOptionMenu): The option menu for sparse_output option.
+        dtype_label (ctk.CTkLabel): The label for dtype option.
+        dtype_optMenu (ctk.CTkOptionMenu): The option menu for dtype option.
+        handleUnk_label (ctk.CTkLabel): The label for handle_unknown option.
+        handleUnk_optMenu (ctk.CTkOptionMenu): The option menu for handle_unknown option.
+        minfreq_label (ctk.CTkLabel): The label for min_frequency option.
+        minfreq_entry (ctk.CTkEntry): The entry field for min_frequency option.
+        maxCat_label (ctk.CTkLabel): The label for max_categories option.
+        maxCat_entry (ctk.CTkEntry): The entry field for max_categories option.
+        target_label (ctk.CTkLabel): The label for the column to encode.
+        target_optMenu (ctk.CTkOptionMenu): The option menu for the column to encode.
+        import_file_button (ctk.CTkButton): The button for importing a file.
+        showEntireData_button (ctk.CTkButton): The button for loading the original dataset.
+        loadOHEdf_button (ctk.CTkButton): The button for loading the OHE dataframe.
+        rollback_button (ctk.CTkButton): The button for rolling back changes.
+        SaveChanges_button (ctk.CTkButton): The button for saving changes to the dataframe.
+        ohe_button (ctk.CTkButton): The button for applying One-Hot Encoding.
+
+    Methods:
+        applyOHE: Apply One-Hot Encoding to the dataframe.
+        saveChanges: Save changes to the dataframe.
+        rollback: Rollback changes to the dataframe.
+        updateCols: Update the columns of the dataframe.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,fg_color='transparent',corner_radius=20)
@@ -88,7 +121,21 @@ class OneHotEncFrame(ctk.CTkFrame):
         
         
     def applyOHE(self,drop,sparse,dtype,handleUnk,minfreq,maxCat,target):
-        
+        """
+        Apply One-Hot Encoding to a target column in the DataFrame.
+
+        Parameters:
+        drop (str): The strategy to handle the encoded target column. Default is None.
+        sparse (str): Whether to return sparse matrix or not. Default is False.
+        dtype (str): The data type of the encoded values. Default is np.uint8.
+        handleUnk (str): The strategy to handle unknown categories. Default is 'error'.
+        minfreq (str): The minimum frequency threshold for a category to be encoded. Default is None.
+        maxCat (str): The maximum number of categories to encode. Default is None.
+        target (str): The name of the target column to encode.
+
+        Returns:
+        None
+        """
         if self.controller.frames[ppf.PrePFrame].dfOHE is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return

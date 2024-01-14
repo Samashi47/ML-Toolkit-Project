@@ -4,6 +4,41 @@ import preprocessing.ppframe as ppf
 from imblearn.over_sampling import SVMSMOTE
 
 class SVMSmoteFrame(ctk.CTkFrame):
+    """
+    A class representing the SVMSmoteFrame, which is a custom frame for applying SVMSMOTE algorithm.
+
+    Args:
+        parent: The parent widget.
+        controller: The controller object.
+
+    Attributes:
+        controller: The controller object.
+        svmsmote: The label for SVMSMOTE.
+        Strat_label: The label for sampling strategy.
+        Strat_optMenu: The option menu for sampling strategy.
+        RandS_label: The label for random state.
+        RandS_entry: The entry field for random state.
+        kNei_label: The label for k-neighbors.
+        kNei_entry: The entry field for k-neighbors.
+        mNeigh_label: The label for m-neighbors.
+        mNeigh_entry: The entry field for m-neighbors.
+        outStep_label: The label for out step.
+        outStep_entry: The entry field for out step.
+        import_file_button: The button for importing a file.
+        showEntireData_button: The button for loading the entire dataset.
+        showTrainSplit_button: The button for loading the original train data.
+        showTestSplit_button: The button for loading the resampled train data.
+        showTargetTrainSplit_button: The button for loading the original train target.
+        showTargetTestSplit_button: The button for loading the resampled train target.
+        rollback_button: The button for rolling back changes.
+        SaveChanges_button: The button for saving changes to the dataframe.
+        svmsmote_button: The button for applying SVMSMOTE.
+
+    Methods:
+        saveChanges: Saves changes to the dataframe.
+        rollback: Rolls back changes to the dataframe.
+        applySVMSMOTE: Applies SVMSMOTE algorithm to balance the classes.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,fg_color='transparent',corner_radius=20)
@@ -104,6 +139,25 @@ class SVMSmoteFrame(ctk.CTkFrame):
             tk.messagebox.showinfo('Info', 'Rollback successful')
     
     def applySVMSMOTE(self,sampling_strategy="auto",random_state=None,k_neighbors=5,m_neighbors=10, out_step=0.5):
+        """
+        Apply SVMSMOTE algorithm to balance the classes in the training data.
+
+        Parameters:
+        - sampling_strategy (str or float or dict, optional): The desired ratio of the number of samples in the minority class over the number of samples in the majority class after resampling. Default is "auto".
+        - random_state (int or None, optional): Seed used by the random number generator. Default is None.
+        - k_neighbors (int, optional): Number of nearest neighbors to be considered in the majority class. Default is 5.
+        - m_neighbors (int, optional): Number of nearest neighbors to be considered in the minority class. Default is 10.
+        - out_step (float, optional): Step size for the outlier detection. Default is 0.5.
+
+        Returns:
+        - None
+
+        Raises:
+        - Python Error: If the data file is not imported or if the data is not split.
+        - Python Error: If categorical columns represented as strings are found in the data.
+        - Python Error: If k_neighbors, random_state, m_neighbors, or out_step are not of the expected type.
+
+        """
         if self.controller.frames[ppf.PrePFrame].df is None :
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
@@ -155,6 +209,10 @@ class SVMSmoteFrame(ctk.CTkFrame):
             
         # Apply SMOTE to balance the classes
         svmsmote = SVMSMOTE(sampling_strategy=sampling_strategy,random_state=random_state,k_neighbors=k_neighbors,m_neighbors=m_neighbors, out_step=out_step)
-        self.controller.frames[ppf.PrePFrame].X_train_resampled, self.controller.frames[ppf.PrePFrame].y_train_resampled = svmsmote.fit_resample(X, y)
+        try:
+            self.controller.frames[ppf.PrePFrame].X_train_resampled, self.controller.frames[ppf.PrePFrame].y_train_resampled = svmsmote.fit_resample(X, y)
+        except ValueError as e:
+            tk.messagebox.showerror('Python Error', e)
+            return
 
         tk.messagebox.showinfo('Info', 'Shape of X_train after SMOTE is : {} \nShape of y_train after SMOTE is : {}\n SMOTE applied successfully.'.format(self.controller.frames[ppf.PrePFrame].X_train_resampled.shape,self.controller.frames[ppf.PrePFrame].y_train_resampled.shape))

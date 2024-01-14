@@ -1,12 +1,31 @@
-import tkinter as tk
-from tkinter import ttk
 import customtkinter as ctk
 from tkinter import messagebox
-import preprocessing.ppframe as ppf
 from matplotlib.figure import Figure
 import visualization.vizualization_frame as vsf
 
 class MatplotlibFrame(ctk.CTkFrame):
+    """
+    A custom frame class for creating a matplotlib plotter frame.
+
+    Args:
+        parent: The parent widget.
+        controller: The controller object.
+
+    Attributes:
+        figure: The matplotlib Figure object.
+        ax: The matplotlib Axes object.
+        title_label: The label for the title of the plot.
+        x_label: The label for selecting the X-axis label.
+        x_dropdown: The dropdown menu for selecting the X-axis label.
+        y_label: The label for selecting the Y-axis label.
+        y_dropdown: The dropdown menu for selecting the Y-axis label.
+        z_label: The label for selecting the Z-axis label.
+        z_dropdown: The dropdown menu for selecting the Z-axis label.
+        diagram_label: The label for selecting the diagram type.
+        diagram_dropdown: The dropdown menu for selecting the diagram type.
+        submit_button: The button for submitting the plot.
+        save_button: The button for saving the plot.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,corner_radius=20,fg_color='transparent')
@@ -15,7 +34,7 @@ class MatplotlibFrame(ctk.CTkFrame):
         self.ax = self.figure.add_subplot(111)
 
         # Title
-        self.title_label = ctk.CTkLabel(self, text="matplotlib plotter", font=('Arial', 30))
+        self.title_label = ctk.CTkLabel(self, text="matplotlib Plotter", font=('Arial', 30))
         self.title_label.place(relx=0.5, rely=0.08, anchor="center")
 
         # X Label
@@ -62,6 +81,19 @@ class MatplotlibFrame(ctk.CTkFrame):
 
 
     def submit(self):
+        """
+        Submits the selected labels and diagram type for plotting.
+
+        Retrieves the selected labels and diagram type from the dropdown menus.
+        Checks if all required fields are selected.
+        Finds the visulateFrame instance in the controller's frames.
+        Clears the existing plot in the visulateFrame instance.
+        Calls the plot_data_matplotlib method in the visulateFrame instance to plot the data.
+
+        Raises:
+            - Error: If visulateFrame instance is not found in controller frames.
+            - Error: If X Label, Y Label, and Diagram Type are not selected.
+        """
         x_label = self.x_dropdown.get()
         y_label = self.y_dropdown.get()
         z_label = self.z_dropdown.get()

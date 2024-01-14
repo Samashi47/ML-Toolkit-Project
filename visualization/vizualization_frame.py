@@ -1,18 +1,32 @@
 import tkinter as tk
+from tkinter import messagebox
 import customtkinter as ctk
+import os
+import seaborn as sns
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import visualization.subframes.matplotlib_frame as mpl
 import visualization.subframes.seaborn_frame as snsf
-import seaborn as sns
 import preprocessing.ppframe as ppf
-from matplotlib.figure import Figure
-from tkinter import messagebox
-import matplotlib.pyplot as plt
-import matplotlib.backends.backend_tkagg as tkagg
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-import os
-
 
 class visulizeFrame(ctk.CTkFrame):
+    """
+    A custom frame class for visualization in the ML Toolkit Project.
+
+    Attributes:
+        controller (object): The controller object for the frame.
+        path (tk.StringVar): The path of the visualization.
+        figure (matplotlib.figure.Figure): The figure object for the visualization.
+        ax (matplotlib.axes.Axes): The axes object for the visualization.
+        ax_3d (matplotlib.axes.Axes3D): The 3D axes object for the visualization.
+        TopFrame (ctk.CTkFrame): The top frame of the visualization.
+        visualization_canvas (ctk.CTkCanvas): The canvas for the visualization.
+        canvas (matplotlib.backends.backend_tkagg.FigureCanvasTkAgg): The canvas widget for the visualization.
+        canvas_widget (tk.Widget): The tkinter widget for the canvas.
+        toolbar (NavigationToolbar2Tk): The toolbar for the visualization.
+        matplotlib_frame (mpl.MatplotlibFrame): The matplotlib frame for the visualization.
+        seaborn_frame (snsf.SeabornFrame): The seaborn frame for the visualization.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent)
@@ -54,8 +68,26 @@ class visulizeFrame(ctk.CTkFrame):
         self.update_canvas()
     
     def plot_data_seaborn(self, x_label, y_label, diagram_type):
+        """
+        Plot data using Seaborn library based on user selections.
+
+        Args:
+            x_label (str): The label for the x-axis.
+            y_label (str): The label for the y-axis.
+            diagram_type (str): The type of diagram to be plotted.
+
+        Returns:
+            None
+        """
         data = self.controller.frames[ppf.PrePFrame].df
-        self.ax.clear()
+        # Clear all existing subplots from the figure
+        for self.ax in self.figure.get_axes():
+            self.ax.remove()
+        # Create a new subplot
+        self.ax = self.figure.add_subplot(111)
+        self.ax.set_xlabel(x_label)
+        self.ax.set_ylabel(y_label)
+        self.ax.set_title(diagram_type+" Diagram"+" of "+x_label+" and "+y_label)
         # Seaborn plot based on user selections
         if diagram_type == "scatter":
             sns.scatterplot(x=x_label, y=y_label, data=data, ax=self.ax)
@@ -74,6 +106,18 @@ class visulizeFrame(ctk.CTkFrame):
         self.update_canvas()
 
     def plot_data_matplotlib(self, x_axis, y_axis, z_axis, diagram_type):
+        """
+        Plot data using Matplotlib library.
+
+        Args:
+            x_axis (str): The column name for the x-axis.
+            y_axis (str): The column name for the y-axis.
+            z_axis (str): The column name for the z-axis (optional, used for 3D plots).
+            diagram_type (str): The type of diagram to plot.
+
+        Returns:
+            None
+        """
         data = self.controller.frames[ppf.PrePFrame].df
 
         # Clear all existing subplots from the figure
@@ -128,6 +172,12 @@ class visulizeFrame(ctk.CTkFrame):
         self.update_canvas()
 
     def save_diagram_as_png(self, filename="seaborn_diagram.png"):
+        """
+        Saves the diagram as a PNG file.
+
+        Args:
+            filename (str, optional): The name of the PNG file to be saved. Defaults to "seaborn_diagram.png".
+        """
         # Check if the save directory exists, create if not
         save_dir = "saved_diagrams"
         os.makedirs(save_dir, exist_ok=True)

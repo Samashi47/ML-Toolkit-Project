@@ -4,9 +4,38 @@ import customtkinter as ctk
 from sklearn.neighbors import KNeighborsClassifier
 import  modeling.models_frame as mf
 import preprocessing.ppframe as ppf
-from tkinter import messagebox
 
 class KnnFrame(ctk.CTkFrame):
+    """
+    A custom frame for KNN (K-Nearest Neighbors) model configuration.
+
+    Args:
+        parent: The parent widget.
+        controller: The controller object.
+
+    Attributes:
+        knn: The label widget displaying "KNN".
+        weights_label: The label widget for selecting the weight type.
+        weights_optMenu: The option menu widget for selecting the weight type.
+        neighbors_label: The label widget for entering the number of neighbors.
+        neighbors_entry: The entry widget for entering the number of neighbors.
+        algorithm_label: The label widget for selecting the algorithm.
+        algorithm_optMenu: The option menu widget for selecting the algorithm.
+        p_label: The label widget for entering the p value.
+        p_entry: The entry widget for entering the p value.
+        leaf_label: The label widget for entering the leaf size.
+        leaf_entry: The entry widget for entering the leaf size.
+        jobs_label: The label widget for entering the number of jobs.
+        jobs_entry: The entry widget for entering the number of jobs.
+        import_file_button: The button widget for importing a file.
+        evaluateModel_button: The button widget for evaluating the model.
+        SaveChanges_button: The button widget for saving the model.
+        knn_button: The button widget for training the model.
+
+    Methods:
+        applyKnn: Applies the KNN algorithm with the specified parameters.
+        saveModel: Saves the trained model to a file.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent, fg_color='transparent', corner_radius=20)
@@ -78,13 +107,26 @@ class KnnFrame(ctk.CTkFrame):
 
 
     def applyKnn(self,weig="uniform",neigh=5,algo="auto",p=2,leaf=30,jobs=None):
-        
+        """
+        Applies the K-nearest neighbors algorithm to the data.
+
+        Args:
+            weig (str, optional): Weight function used in prediction. Defaults to "uniform".
+            neigh (int, optional): Number of neighbors to use. Defaults to 5.
+            algo (str, optional): Algorithm used to compute the nearest neighbors. Defaults to "auto".
+            p (int, optional): Power parameter for the Minkowski metric. Defaults to 2.
+            leaf (int, optional): Leaf size passed to BallTree or KDTree. Defaults to 30.
+            jobs (int or None, optional): Number of parallel jobs to run for neighbors search. Defaults to None.
+
+        Returns:
+            None
+        """
         if self.controller.frames[ppf.PrePFrame].df is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
         
         if self.controller.frames[ppf.PrePFrame].X_train is None or self.controller.frames[ppf.PrePFrame].y_train is None:
-            tk.messagebox.showerror('Python Error', "Splite the data first.")
+            tk.messagebox.showerror('Python Error', "Split the data first.")
             return
 
         if any(self.controller.frames[ppf.PrePFrame].X_test.dtypes == object):

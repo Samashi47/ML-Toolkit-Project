@@ -6,6 +6,51 @@ import preprocessing.ppframe as ppf
 import re
 
 class NormSCFrame(ctk.CTkFrame):
+    """
+    A custom tkinter frame for normalizing and scaling data.
+
+    Args:
+        parent: The parent tkinter widget.
+        controller: The controller object for managing frames.
+
+    Attributes:
+        controller: The controller object for managing frames.
+        seph: The horizontal separator widget.
+        sepv: The vertical separator widget.
+        norm_label: The label for the normalizer section.
+        Norm_label: The label for the norm option.
+        norm_optMenu: The option menu for selecting the norm.
+        nCols_label: The label for the target option in the normalizer section.
+        nCols_optMenu: The option menu for selecting the target in the normalizer section.
+        norm_button: The button for applying normalization.
+        sc_label: The label for the standard scaler section.
+        withMean_label: The label for the with_mean option in the standard scaler section.
+        sc_optMenu: The option menu for selecting the with_mean option in the standard scaler section.
+        withStd_label: The label for the with_std option in the standard scaler section.
+        withStd_optMenu: The option menu for selecting the with_std option in the standard scaler section.
+        scCols_label: The label for the target option in the standard scaler section.
+        scCols_optMenu: The option menu for selecting the target in the standard scaler section.
+        sc_button: The button for applying standardization.
+        minmax_label: The label for the min-max scaler section.
+        feature_range_label: The label for the feature_range option in the min-max scaler section.
+        feature_range_entry: The entry field for entering the feature_range in the min-max scaler section.
+        axis_label: The label for the axis option in the min-max scaler section.
+        axis_OptMenu: The option menu for selecting the axis option in the min-max scaler section.
+        mmCols_label: The label for the target option in the min-max scaler section.
+        mmCols_optMenu: The option menu for selecting the target in the min-max scaler section.
+        minmax_button: The button for applying min-max scaling.
+        maxabs_label: The label for the max-abs scaler section.
+        maxabsAxis_label: The label for the axis option in the max-abs scaler section.
+        maxabsAxis_OptMenu: The option menu for selecting the axis option in the max-abs scaler section.
+        mabsCols_label: The label for the target option in the max-abs scaler section.
+        mabsCols_optMenu: The option menu for selecting the target in the max-abs scaler section.
+        maxabs_button: The button for applying max-abs scaling.
+        import_file_button: The button for importing a file.
+        showEntireData_button: The button for loading the original dataset.
+
+    Methods:
+        __init__: Initializes the NormSCFrame object.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,fg_color='transparent',corner_radius=20)
@@ -110,6 +155,16 @@ class NormSCFrame(ctk.CTkFrame):
         self.SaveChanges_button.place(anchor="center",relx=0.92, rely=0.78)
         
     def applyNorm(self,norm,target):
+        """
+        Apply normalization to the data.
+
+        Args:
+            norm (str): The normalization method to be applied.
+            target (str): The target column to be preserved.
+
+        Returns:
+            None
+        """
         if self.controller.frames[ppf.PrePFrame].dfNSC is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
@@ -128,6 +183,17 @@ class NormSCFrame(ctk.CTkFrame):
         self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfNSC)
     
     def applySC(self,with_mean,with_std,target):
+        """
+            Apply StandardScaler to the data frame.
+
+            Parameters:
+            - with_mean (bool): Whether to center the data before scaling. Default is False.
+            - with_std (bool): Whether to scale the data to unit variance. Default is False.
+            - target (str): The target column to be excluded from scaling.
+
+            Returns:
+            None
+            """
         if self.controller.frames[ppf.PrePFrame].dfNSC is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
@@ -156,6 +222,17 @@ class NormSCFrame(ctk.CTkFrame):
         self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfNSC)
         
     def applyMinMax(self, feature_range, axis,target):
+        """
+        Apply Min-Max scaling to the specified dataframe.
+
+        Parameters:
+        - feature_range (tuple): The desired range of the transformed data. Default is (0, 1).
+        - axis (int): The axis along which the scaling is applied. 0 for columns, 1 for rows.
+        - target (str): The name of the target column.
+
+        Returns:
+        None
+        """
         if self.controller.frames[ppf.PrePFrame].dfNSC is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
@@ -187,6 +264,16 @@ class NormSCFrame(ctk.CTkFrame):
         self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfNSC)
         
     def applyMaxAbs(self,axis,target):
+        """
+        Apply MaxAbs scaling to the dataframe.
+
+        Args:
+            axis (int): The axis along which to scale the data.
+            target: The target column to be preserved without scaling.
+
+        Returns:
+            None
+        """
         if self.controller.frames[ppf.PrePFrame].dfNSC is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return

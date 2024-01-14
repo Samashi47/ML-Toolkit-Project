@@ -14,7 +14,47 @@ import preprocessing.subframes.labelenc_frame as lef
 import visualization.vizualization_frame as vsf
 
 class PrePFrame(ctk.CTkFrame):
+    """
+    A custom tkinter frame for preprocessing operations.
+
+    Attributes:
+    - controller: The controller object.
+    - TopFrame: The top frame of the PrePFrame.
+    - df_frame: The frame to hold the DataFrame.
+    - df: The DataFrame object.
+    - df_msv: The DataFrame object for missing value operations.
+    - dfPCA: The DataFrame object for PCA operations.
+    - dfNSC: The DataFrame object for normalization and scaling operations.
+    - dfOHE: The DataFrame object for one-hot encoding operations.
+    - dfLE: The DataFrame object for label encoding operations.
+    - X_train: The training data.
+    - X_test: The testing data.
+    - y_train: The training labels.
+    - y_test: The testing labels.
+    - X_train_resampled: The resampled training data.
+    - y_train_resampled: The resampled training labels.
+    - dfCols: The list of column names in the DataFrame.
+    - dfCols_num: The list of numerical column names in the DataFrame.
+    - dfCols_cat: The list of categorical column names in the DataFrame.
+    - train_test_split_frame: The TrainTestSplitFrame object.
+    - smote_frame: The SVMSmoteFrame object.
+    - msv_frame: The MissingValsFrame object.
+    - cnn_frame: The CNNFrame object.
+    - pca_frame: The PCAFrame object.
+    - norm_sc_frame: The NormSCFrame object.
+    - ohe_frame: The OneHotEncFrame object.
+    - le_frame: The LabelEncFrame object.
+    - succes_label: The success label widget.
+    """
+
     def __init__(self, parent, controller):
+        """
+        Initializes a PrePFrame object.
+
+        Parameters:
+        - parent: The parent widget.
+        - controller: The controller object.
+        """
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent)
         self.rowconfigure((0,1), weight=1)
@@ -63,6 +103,12 @@ class PrePFrame(ctk.CTkFrame):
         self.show_frame("train_test_split")
         
     def show_frame(self, frame):
+        """
+        Shows the specified frame and hides the other frames.
+
+        Parameters:
+        - frame: The name of the frame to show.
+        """
         frames = {
             "train_test_split": self.train_test_split_frame,
             "svmsmote": self.smote_frame,
@@ -85,6 +131,9 @@ class PrePFrame(ctk.CTkFrame):
                 f.place_forget()
                 
     def getFile(self):
+        """
+        Opens a file dialog to select a file and imports it as a DataFrame.
+        """
         self.path = tk.filedialog.askopenfilename()
         if self.path.endswith('.csv') or self.path.endswith('.data'):
             self.df = pd.read_csv(self.path)
@@ -111,6 +160,12 @@ class PrePFrame(ctk.CTkFrame):
             self.getColumns()
     
     def showDataFrame(self, data):
+        """
+        Displays the DataFrame using tksheet.
+
+        Parameters:
+        - data: The DataFrame to display.
+        """
         if data is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
@@ -142,6 +197,9 @@ class PrePFrame(ctk.CTkFrame):
         sheet.set_sheet_data(data.values.tolist())
     
     def getColumns(self):
+        """
+        Retrieves the column names from the DataFrame and updates the dropdown menus in the frames.
+        """
         if self.df is not None:
             self.dfCols = self.df_msv.columns.tolist()
             self.dfCols_num = self.df_msv.select_dtypes(include='number').columns.tolist()

@@ -15,6 +15,33 @@ import modeling.subframes.lr_frame as lrf
 import preprocessing.ppframe as ppf
 
 class ModelsFrame(ctk.CTkFrame):
+    """
+    A class representing the models frame in the ML Toolkit Project.
+
+    Attributes:
+        controller: The controller object.
+        TopFrame: The top frame.
+        eval_frame: The frame to hold the evaluation results.
+        plot_frame: The frame to hold the plots.
+        classification_report_label: The label for the classification report.
+        accuracy_label: The label for the accuracy.
+        ac_label: The label for the accuracy value.
+        f1_label: The label for the F1 score.
+        fl_label: The label for the F1 score value.
+        precision_label: The label for the precision.
+        prec_label: The label for the precision value.
+        recall_label: The label for the recall.
+        rec_label: The label for the recall value.
+        model: The model object.
+        y_pred: The predicted labels.
+        y_pred_proba: The predicted probabilities.
+        dt_frame: The decision tree frame.
+        rf_frame: The random forest frame.
+        knn_frame: The K-nearest neighbors frame.
+        svm_frame: The support vector machine frame.
+        nb_frame: The naive Bayes frame.
+        lr_frame: The logistic regression frame.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent)
@@ -77,6 +104,16 @@ class ModelsFrame(ctk.CTkFrame):
         
         
     def evaluateModel(self):
+        """
+        Evaluates the trained model by generating and displaying evaluation metrics and plots.
+
+        Raises:
+            tk.messagebox.showerror: If the model is not trained or the number of columns in X_train and X_test are not the same.
+            ValueError: If there is an error during evaluation.
+
+        Returns:
+            None
+        """
         if self.model is None:
             tk.messagebox.showerror('Python Error', "Please train a model first.")
             return
@@ -84,8 +121,6 @@ class ModelsFrame(ctk.CTkFrame):
         if self.controller.frames[ppf.PrePFrame].X_train.shape[1] != self.controller.frames[ppf.PrePFrame].X_test.shape[1]:
             tk.messagebox.showerror('Python Error', "Number of columns in X_train and X_test must be the same.")
             return
-        
-        
         
         for widget in self.plot_frame.winfo_children():
             widget.destroy()

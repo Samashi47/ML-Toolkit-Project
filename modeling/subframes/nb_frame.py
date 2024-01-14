@@ -8,6 +8,30 @@ from tkinter import messagebox
 
 
 class NbFrame(ctk.CTkFrame):
+    """
+    A custom frame class for the Naive Bayes frame in the ML Toolkit project.
+
+    Args:
+        parent: The parent widget.
+        controller: The controller object.
+
+    Attributes:
+        controller: The controller object.
+        sepv: The vertical separator widget.
+        gaus_label: The label for Gaussian Naive Bayes.
+        smooth_label: The label for var_smoothing.
+        smooth_entry: The entry widget for var_smoothing.
+        nbg_button: The button to train Gaussian Naive Bayes.
+        mult_label: The label for Multinomial Naive Bayes.
+        alpha_label: The label for alpha.
+        alpha_entry: The entry widget for alpha.
+        prior_label: The label for fit_prior.
+        prior_OptMenu: The option menu for fit_prior.
+        nbm_button: The button to train Multinomial Naive Bayes.
+        import_file_button: The button to import a file.
+        evaluateModel_button: The button to evaluate the model.
+        SaveChanges_button: The button to save the model.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent, fg_color='transparent', corner_radius=20)
@@ -71,6 +95,19 @@ class NbFrame(ctk.CTkFrame):
 
 
     def applyNbg(self,smooth=1e-9):
+        """
+        Apply Gaussian Naive Bayes classifier with optional smoothing.
+
+        Args:
+            smooth (float or str): The smoothing parameter. If a string is provided, it will be converted to a float.
+
+        Returns:
+            None
+
+        Raises:
+            tk.messagebox.showerror: If there is an error in the input or during training.
+
+        """
         if self.controller.frames[ppf.PrePFrame].df is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
@@ -92,14 +129,38 @@ class NbFrame(ctk.CTkFrame):
 
         # Initialiser le classificateur
         self.controller.frames[mf.ModelsFrame].model = GaussianNB(var_smoothing=smooth)
-        # Entraîner le modèle
-        self.controller.frames[mf.ModelsFrame].model.fit(self.controller.frames[ppf.PrePFrame].X_train,
+        try:
+            # Entraîner le modèle
+            self.controller.frames[mf.ModelsFrame].model.fit(self.controller.frames[ppf.PrePFrame].X_train,
                                                        self.controller.frames[ppf.PrePFrame].y_train)
-        tk.messagebox.showinfo('Info', 'Training successful')
-
+            tk.messagebox.showinfo('Info', 'Training successful')
+            return
+        except ValueError as e:
+            tk.messagebox.showerror('Python Error', str(e))
+            return
 
 
     def applyNbm(self,alp=1.0,pri="True"):
+        """
+        Apply Multinomial Naive Bayes model to the data.
+
+        Args:
+            alp (float or str): The smoothing parameter alpha. Default is 1.0.
+            pri (str): Whether to learn class prior probabilities or not. Default is "True".
+
+        Returns:
+            None
+
+        Raises:
+            Python Error: If the data file is not imported.
+            Python Error: If train test split is not performed.
+            Python Error: If categorical columns are represented as strings.
+            Python Error: If alpha is not a float.
+            Python Error: If alpha is negative.
+            Python Error: If there are negative values in the input data.
+            Python Error: If there is a ValueError during model training.
+
+        """
         if self.controller.frames[ppf.PrePFrame].df is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
@@ -139,8 +200,6 @@ class NbFrame(ctk.CTkFrame):
             tk.messagebox.showerror('Python Error', str(e))
             return
         
-
-
     def saveModel(self):
         if self.controller.frames[mf.ModelsFrame].model is None:
             tk.messagebox.showerror('Python Error', "Please train a model first.")

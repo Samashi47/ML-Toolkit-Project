@@ -8,6 +8,48 @@ import preprocessing.ppframe as ppf
 import visualization.vizualization_frame as vsf
 
 class MissingValsFrame(ctk.CTkFrame):
+    """
+    A custom frame for handling missing values in a DataFrame.
+
+    Attributes:
+        controller (object): The parent controller object.
+        removeCol_label (ctk.CTkLabel): Label for removing columns.
+        Cols_optMenu (ctk.CTkOptionMenu): Option menu for selecting columns to remove.
+        removeCol_button (ctk.CTkButton): Button for removing columns.
+        seph (tk.ttk.Separator): Horizontal separator.
+        sep1v (tk.ttk.Separator): Vertical separator.
+        removeRow_label (ctk.CTkLabel): Label for removing rows with null values.
+        removeRow_button (ctk.CTkButton): Button for removing rows with null values.
+        replaceMean_label (ctk.CTkLabel): Label for replacing with mean.
+        replaceMean_optMenu (ctk.CTkOptionMenu): Option menu for selecting columns to replace with mean.
+        replaceMean_button (ctk.CTkButton): Button for replacing with mean.
+        replaceMode_label (ctk.CTkLabel): Label for replacing with mode.
+        replaceMode_optMenu (ctk.CTkOptionMenu): Option menu for selecting columns to replace with mode.
+        replaceMode_button (ctk.CTkButton): Button for replacing with mode.
+        sep2v (tk.ttk.Separator): Vertical separator.
+        replaceMedian_label (ctk.CTkLabel): Label for replacing with median.
+        replaceMedian_optMenu (ctk.CTkOptionMenu): Option menu for selecting columns to replace with median.
+        replaceMedian_button (ctk.CTkButton): Button for replacing with median.
+        replaceWithValue_label (ctk.CTkLabel): Label for replacing with a specific value.
+        replaceWithValue_optMenu (ctk.CTkOptionMenu): Option menu for selecting columns to replace with a specific value.
+        replaceWithValue_entry (ctk.CTkEntry): Entry field for entering the specific value.
+        replaceWithValue_button (ctk.CTkButton): Button for replacing with a specific value.
+        import_file_button (ctk.CTkButton): Button for importing a file.
+        showEntireData_button (ctk.CTkButton): Button for loading the original dataset.
+        loadMissValsDF_button (ctk.CTkButton): Button for loading the missing values DataFrame.
+        CountMissVals_button (ctk.CTkButton): Button for counting missing values.
+        printDFInfo_button (ctk.CTkButton): Button for showing DataFrame info.
+        rollback_button (ctk.CTkButton): Button for rolling back changes.
+        SaveChanges_button (ctk.CTkButton): Button for saving changes to DataFrame.
+        toplevel_window (object): Top-level window object for displaying information.
+
+    Methods:
+        printMissingVals: Prints the count of missing values in the DataFrame.
+        saveChanges: Saves the changes made to the DataFrame.
+        rollback: Rolls back the changes made to the DataFrame.
+        printDFInfo: Prints information about the DataFrame.
+        removeCol: Removes a column from the DataFrame.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,fg_color='transparent',corner_radius=20)
@@ -109,6 +151,9 @@ class MissingValsFrame(ctk.CTkFrame):
         self.toplevel_window = None
         
     def printMissingVals(self):
+        """
+        Prints the count of missing values in the DataFrame.
+        """
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             MissVals = str(self.controller.frames[ppf.PrePFrame].df_msv.isnull().sum())
             if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
@@ -117,6 +162,9 @@ class MissingValsFrame(ctk.CTkFrame):
                 self.toplevel_window.focus()  # if window exists focus it
         
     def saveChanges(self):
+        """
+        Saves the changes made to the DataFrame.
+        """
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             self.controller.frames[ppf.PrePFrame].df = self.controller.frames[ppf.PrePFrame].df_msv.copy()
             self.controller.frames[ppf.PrePFrame].dfPCA = self.controller.frames[ppf.PrePFrame].df.copy()
@@ -127,12 +175,18 @@ class MissingValsFrame(ctk.CTkFrame):
             tk.messagebox.showinfo('Info', 'Changes saved to Dataframe, rollback not available.')
             
     def rollback(self):
+        """
+        Rolls back the changes made to the DataFrame.
+        """
         if self.controller.frames[ppf.PrePFrame].df_msv is not None and self.controller.frames[ppf.PrePFrame].df is not None:
             self.controller.frames[ppf.PrePFrame].df_msv = self.controller.frames[ppf.PrePFrame].df.copy()
             self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].df_msv)
             tk.messagebox.showinfo('Info', 'Rollback successful')
             
     def printDFInfo(self):
+        """
+        Prints information about the DataFrame.
+        """
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             # Redirect the standard output to a StringIO object
             output = io.StringIO()
@@ -156,6 +210,12 @@ class MissingValsFrame(ctk.CTkFrame):
                 print("No information available for the DataFrame.")
                 
     def removeCol(self, col):
+        """
+        Removes a column from the DataFrame.
+
+        Args:
+            col (str): The name of the column to remove.
+        """
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             if col in self.controller.frames[ppf.PrePFrame].dfCols:
                 self.controller.frames[ppf.PrePFrame].df_msv.drop(col, axis=1, inplace=True)
@@ -183,6 +243,9 @@ class MissingValsFrame(ctk.CTkFrame):
                 return
             
     def updateCols(self):
+        """
+        Updates the columns in various dropdown menus based on the current dataframe.
+        """
         
         self.controller.frames[ppf.PrePFrame].dfCols = self.controller.frames[ppf.PrePFrame].df.columns.tolist()
 
@@ -220,6 +283,19 @@ class MissingValsFrame(ctk.CTkFrame):
         self.controller.frames[vsf.visulizeFrame].seaborn_frame.y_dropdown.configure(variable=tk.StringVar(value=self.controller.frames[ppf.PrePFrame].dfCols[-1]))
             
     def removeNArows(self):
+        """
+        Removes rows containing null values from the MV Dataframe.
+
+        If the MV Dataframe contains null values, this method drops the rows
+        with null values and updates the MV Dataframe accordingly. It also
+        displays the updated MV Dataframe and shows an information message
+        indicating that rows with null values have been removed. If the MV
+        Dataframe does not contain any null values, it shows an error message
+        indicating that there are no null values in the Dataframe.
+
+        Returns:
+            None
+        """
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             if self.controller.frames[ppf.PrePFrame].df_msv.isnull().values.any():
                 self.controller.frames[ppf.PrePFrame].df_msv.dropna(inplace=True)
@@ -230,6 +306,15 @@ class MissingValsFrame(ctk.CTkFrame):
                 return
             
     def replaceWithMean(self,col):
+        """
+        Replace null values in a specific column with the mean value of that column.
+
+        Args:
+            col (str): The name of the column to replace null values in.
+
+        Returns:
+            None
+        """
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             if self.controller.frames[ppf.PrePFrame].df_msv[col].isnull().values.any():
                 self.controller.frames[ppf.PrePFrame].df_msv[col].fillna(self.controller.frames[ppf.PrePFrame].df_msv[col].mean(), inplace=True)
@@ -242,6 +327,15 @@ class MissingValsFrame(ctk.CTkFrame):
     
         
     def replaceWithMedian(self,col):
+        """
+        Replaces null values in a specific column with the median value of that column.
+
+        Args:
+            col (str): The name of the column to replace null values in.
+
+        Returns:
+            None
+        """
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             if self.controller.frames[ppf.PrePFrame].df_msv[col].isnull().values.any():
                 self.controller.frames[ppf.PrePFrame].df_msv[col].fillna(self.controller.frames[ppf.PrePFrame].df_msv[col].median(), inplace=True)
@@ -252,6 +346,15 @@ class MissingValsFrame(ctk.CTkFrame):
                 return
             
     def replaceWithMode(self,col):
+        """
+        Replaces null values in a specific column with the mode value.
+
+        Args:
+            col (str): The name of the column to replace null values in.
+
+        Returns:
+            None
+        """
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             if self.controller.frames[ppf.PrePFrame].df_msv[col].isnull().values.any():
                 self.controller.frames[ppf.PrePFrame].df_msv[col].fillna(self.controller.frames[ppf.PrePFrame].df_msv[col].mode()[0], inplace=True)
@@ -262,6 +365,16 @@ class MissingValsFrame(ctk.CTkFrame):
                 return
             
     def replaceWithValue(self, col, value):
+        """
+        Replaces null values in a specific column of the dataframe with a given value.
+
+        Args:
+            col (str): The name of the column to replace null values in.
+            value (str or int or float): The value to replace null values with.
+
+        Returns:
+            None
+        """
         if self.controller.frames[ppf.PrePFrame].df_msv is not None:
             if self.controller.frames[ppf.PrePFrame].df_msv[col].isnull().values.any():
                 if value.isnumeric() and self.controller.frames[ppf.PrePFrame].df_msv[col].dtype != 'object':
@@ -279,7 +392,19 @@ class MissingValsFrame(ctk.CTkFrame):
                 return
 
 class ToplevelWindow(ctk.CTkToplevel):
+    
     def __init__(self,txt):
+        """
+        A custom top-level window for displaying missing values.
+
+        Args:
+            txt (str): The text to be displayed in the window.
+
+        Attributes:
+            txt (str): The text to be displayed in the window.
+            scrollable_frame (ctk.CTkScrollableFrame): The scrollable frame widget.
+            missVals_text (ctk.CTkLabel): The label widget for displaying the missing values text.
+        """
         ctk.CTkToplevel.__init__(self)
         self.title("ML Toolkit - Missing Values")
         self.geometry("500x400")

@@ -7,6 +7,45 @@ import preprocessing.ppframe as ppf
 
 
 class DTFrame(ctk.CTkFrame):
+    """
+    A custom frame class for Decision Trees.
+
+    Args:
+        parent: The parent widget.
+        controller: The controller object.
+
+    Attributes:
+        DT_label: The label for the Decision Trees section.
+        criterion_label: The label for the criterion option menu.
+        criterion_optMenu: The option menu for selecting the criterion.
+        splitter_label: The label for the splitter option menu.
+        splitter_optMenu: The option menu for selecting the splitter.
+        maxdepth_label: The label for the max_depth entry.
+        maxdepth_entry: The entry for specifying the max_depth.
+        randomstate_label: The label for the random_state entry.
+        randomstate_entry: The entry for specifying the random_state.
+        minsamples_label: The label for the min_samples_split entry.
+        minsamples_entry: The entry for specifying the min_samples_split.
+        minleaf_label: The label for the min_samples_leaf entry.
+        minleaf_entry: The entry for specifying the min_samples_leaf.
+        minsamplesleaf_label: The label for the min_weight_fraction_leaf entry.
+        minsamplesleaf_entry: The entry for specifying the min_weight_fraction_leaf.
+        minimpurity_label: The label for the min_impurity_decrease entry.
+        minimpurity_entry: The entry for specifying the min_impurity_decrease.
+        maxfeatures_label: The label for the max_features option menu.
+        maxfeatures_optMenu: The option menu for selecting the max_features.
+        maxleafnodes_label: The label for the max_leaf_nodes entry.
+        maxleafnodes_entry: The entry for specifying the max_leaf_nodes.
+        ccpalpha_label: The label for the ccp_alpha entry.
+        ccpalpha_entry: The entry for specifying the ccp_alpha.
+        import_file_button: The button for importing a file.
+        evaluateModel_button: The button for evaluating the model.
+        SaveChanges_button: The button for saving the model.
+        train_button: The button for training the model.
+
+    Methods:
+        trainDT: Trains the decision tree model with the specified parameters.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,corner_radius=20,fg_color='transparent')
@@ -101,6 +140,25 @@ class DTFrame(ctk.CTkFrame):
         self.train_button.place(anchor="center", relx=0.5, rely=0.94)
         
     def trainDT(self,criterion,splitter,maxdepth,randomstate,minsamples,minleaf,minsamplesleaf,minimpurity,maxfeatures,maxleafnodes,ccpalpha):
+        """
+        Trains a Decision Tree classifier with the specified parameters.
+
+        Args:
+            criterion (str): The function to measure the quality of a split.
+            splitter (str): The strategy used to choose the split at each node.
+            maxdepth (int or None): The maximum depth of the tree. If None, the tree is fully grown.
+            randomstate (int or None): The seed used by the random number generator.
+            minsamples (int): The minimum number of samples required to split an internal node.
+            minleaf (int): The minimum number of samples required to be at a leaf node.
+            minsamplesleaf (float): The minimum weighted fraction of the sum total of weights required to be at a leaf node.
+            minimpurity (float): The minimum impurity decrease required for a split to happen.
+            maxfeatures (int or None): The number of features to consider when looking for the best split. If None, all features are considered.
+            maxleafnodes (int or None): The maximum number of leaf nodes in the tree. If None, there is no maximum limit.
+            ccpalpha (float): Complexity parameter used for Minimal Cost-Complexity Pruning.
+
+        Returns:
+            None
+        """
         if self.controller.frames[ppf.PrePFrame].df is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return

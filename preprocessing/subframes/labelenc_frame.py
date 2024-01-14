@@ -6,7 +6,29 @@ import preprocessing.ppframe as ppf
 
 
 class LabelEncFrame(ctk.CTkFrame):
+    """
+    A custom tkinter frame for applying label encoding to a column in a dataframe.
+
+    Attributes:
+        controller (object): The controller object for managing the frames.
+        LabelEnc_label (object): The label widget for displaying the title.
+        target_label (object): The label widget for displaying the column to encode.
+        target_optMenu (object): The option menu widget for selecting the column to encode.
+        LE_button (object): The button widget for applying label encoding.
+        import_file_button (object): The button widget for importing a file.
+        showEntireData_button (object): The button widget for loading the original dataset.
+        loadLEdf_button (object): The button widget for loading the label encoded dataframe.
+        rollback_button (object): The button widget for rolling back changes.
+        SaveChanges_button (object): The button widget for saving changes to the dataframe.
+    """
     def __init__(self, parent, controller):
+        """
+        Initializes the LabelEncFrame.
+
+        Args:
+            parent (object): The parent widget.
+            controller (object): The controller object for managing the frames.
+        """
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent,fg_color='transparent',corner_radius=20)
         
@@ -45,7 +67,12 @@ class LabelEncFrame(ctk.CTkFrame):
         self.SaveChanges_button.place(anchor="center",relx=0.92, rely=0.84)
         
     def applyLE(self,target):
-        
+        """
+        Applies label encoding to the selected column in the label encoded dataframe.
+
+        Args:
+            target (str): The column to encode.
+        """
         if self.controller.frames[ppf.PrePFrame].dfLE is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
@@ -60,6 +87,9 @@ class LabelEncFrame(ctk.CTkFrame):
         
     
     def saveChanges(self):
+        """
+        Saves the changes made to the label encoded dataframe to the original dataframe.
+        """
         if self.controller.frames[ppf.PrePFrame].dfLE is not None:
             self.controller.frames[ppf.PrePFrame].df = self.controller.frames[ppf.PrePFrame].dfLE.copy()
             self.controller.frames[ppf.PrePFrame].dfPCA = self.controller.frames[ppf.PrePFrame].df.copy()
@@ -69,6 +99,9 @@ class LabelEncFrame(ctk.CTkFrame):
             tk.messagebox.showinfo('Info', 'Changes saved to Dataframe, rollback not available.')
             
     def rollback(self):
+        """
+        Rolls back the changes made to the label encoded dataframe.
+        """
         if self.controller.frames[ppf.PrePFrame].dfLE is not None and self.controller.frames[ppf.PrePFrame].df is not None:
             self.controller.frames[ppf.PrePFrame].dfLE = self.controller.frames[ppf.PrePFrame].df.copy()
             self.controller.frames[ppf.PrePFrame].showDataFrame(self.controller.frames[ppf.PrePFrame].dfLE)

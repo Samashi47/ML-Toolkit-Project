@@ -7,6 +7,29 @@ from sklearn.svm import SVC
 
 
 class SvmFrame(ctk.CTkFrame):
+    """
+    A class representing the SVM frame for the ML Toolkit Project.
+
+    Attributes:
+        controller (object): The controller object.
+        svm (object): The label widget for displaying "SVM".
+        ker_label (object): The label widget for displaying "kernel : ".
+        ker_optMenu (object): The option menu widget for selecting the kernel.
+        RandS_label (object): The label widget for displaying "Random state : ".
+        RandS_entry (object): The entry widget for entering the random state.
+        C_label (object): The label widget for displaying "C : ".
+        C_entry (object): The entry widget for entering the value of C.
+        degree_label (object): The label widget for displaying "Degree : ".
+        degree_entry (object): The entry widget for entering the degree value.
+        gamma_label (object): The label widget for displaying "Gamma : ".
+        gamma_entry (object): The entry widget for entering the gamma value.
+        iter_label (object): The label widget for displaying "max_iter : ".
+        iter_entry (object): The entry widget for entering the max_iter value.
+        import_file_button (object): The button widget for importing a file.
+        evaluateModel_button (object): The button widget for evaluating the model.
+        SaveChanges_button (object): The button widget for saving the model.
+        svm_button (object): The button widget for training the SVM model.
+    """
     def __init__(self, parent, controller):
         self.controller = controller
         ctk.CTkFrame.__init__(self, parent, fg_color='transparent', corner_radius=20)
@@ -77,7 +100,17 @@ class SvmFrame(ctk.CTkFrame):
 
 
     def applySVM(self,ker="rbf",random=None,c=1.0,deg=3,gam="scale",iter=-1):
-        
+        """
+        Applies the SVM algorithm with the specified parameters.
+
+        Args:
+            ker (str, optional): The kernel type. Defaults to "rbf".
+            random (int or None, optional): The random state. Defaults to None.
+            c (float, optional): The C value. Defaults to 1.0.
+            deg (int, optional): The degree value. Defaults to 3.
+            gam (str or int, optional): The gamma value. Defaults to "scale".
+            iter (int, optional): The max_iter value. Defaults to -1.
+        """
         if self.controller.frames[ppf.PrePFrame].df is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
@@ -168,6 +201,15 @@ class SvmFrame(ctk.CTkFrame):
         # Train the SVM model
 
     def saveModel(self):
+        """
+        Saves the trained model to a file.
+
+        Raises:
+            tk.messagebox.showerror: If no model is trained.
+            tk.filedialog.asksaveasfilename: If no file is selected.
+            pickle.dump: If there is an error while saving the model.
+            tk.messagebox.showinfo: If the model is saved successfully.
+        """
         if self.controller.frames[mf.ModelsFrame].model is None:
             tk.messagebox.showerror('Python Error', "Please train a model first.")
             return

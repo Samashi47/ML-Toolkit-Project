@@ -1,3 +1,10 @@
+"""
+This script represents the main application for the ML Toolkit project.
+It imports necessary modules and defines the main application class.
+The class creates a GUI window and sets up the menu bar and frames for different functionalities.
+"""
+
+import platform
 import tkinter as tk
 import customtkinter as ctk
 import customMenu
@@ -7,6 +14,7 @@ import preprocessing.ppframe as ppf
 import modeling.models_frame as mf
 import visualization.vizualization_frame as vsf
 import import_frame as imf
+import docs as dcs
 
 ctk.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 ctk.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -14,12 +22,20 @@ ctk.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", 
 
 class App(ctk.CTk):
     def __init__(self, *args, **kwargs):
+        """
+        Initializes the main application class.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
         ctk.CTk.__init__(self, *args, **kwargs)
         self.title("ML Toolkit")
         self.geometry(f"{1300}x{720}")
         self.iconbitmap(os.path.join("images","ML-icon.ico"))
         self.myappid = 'heh' # arbitrary string
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
+        if platform.system() == "Windows":
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
         menu = customMenu.Menu(self)
 
         file_menu = menu.menu_bar(text="File", tearoff=0)
@@ -50,6 +66,10 @@ class App(ctk.CTk):
         Viz_menu.add_command(label="Seaborn",command=lambda:self.show_frame("sns",vsf.visulizeFrame))
         Viz_menu.add_command(label="Matplotlib",command=lambda:self.show_frame("mpl",vsf.visulizeFrame))
         
+        about_menu = menu.menu_bar(text="About", tearoff=0)
+        about_menu.add_command(label="Docs",command=lambda:self.show_main_frame(dcs.Docs))
+        about_menu.add_command(label="About",command=lambda:tk.messagebox.showinfo("About", "ML Toolkit - V1.0\nCreated by:\n\n- Ahmed Samady | @Samashi47\n- Fahd Chibani | @Dhafahd\n- Marouan Daghmoumi | @Marouan19"))
+        
         container = ctk.CTkFrame(self, width=self.winfo_width(), height=self.winfo_height())
         self.resizable(False, False)
         container.configure(fg_color="#101010")
@@ -60,7 +80,7 @@ class App(ctk.CTk):
         
         self.frames = {}
         
-        for F in (imf.StartFrame, ppf.PrePFrame, mf.ModelsFrame,vsf.visulizeFrame):
+        for F in (imf.StartFrame, ppf.PrePFrame, mf.ModelsFrame, vsf.visulizeFrame, dcs.Docs):
             frame = F(container, self)
 
             self.frames[F] = frame
@@ -70,12 +90,25 @@ class App(ctk.CTk):
         self.show_main_frame(imf.StartFrame)
     
     def show_main_frame(self, cont):
+        """
+        Shows the main frame.
+
+        Args:
+            cont: The frame to show.
+        """
         current_frame = self.frames[cont]
         current_frame.configure(fg_color="#101010")
         current_frame.tkraise()
 
 
     def show_frame(self, frame, main):
+        """
+        Shows a specific frame.
+
+        Args:
+            frame: The frame to show.
+            main: The main frame to show.
+        """
         if self.frames[ppf.PrePFrame].df is None:
             tk.messagebox.showerror('Python Error', "Please import a file first.")
             return
