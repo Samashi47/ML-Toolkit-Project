@@ -1,28 +1,26 @@
 To start off, clone this branch of the repo into your local:
 
-bash
+```bash
 git clone -b main --single-branch [https://github.com/Samashi47/ML-Toolkit-Project]
-
+```
 
 After cloning the project, activate the env:
 
-bash
+```bash
 .venv\Scripts\activate
-
+```
 
 You can run the following command to install the dependencies:
 
-bash
+```bash
 pip3 install -r requirements.txt
-
+```
 
 Then run the main file with:
 
-bash
+```bash
 python main.py
-
-
-2 sets of data are included, for users to test the app, first one is the titanic dataset to test all features of the app, second one is the same dataset but cleaned so the user can test training and testing the model directly.
+```
 
 > [!IMPORTANT]
 > The work flow will be as follows:
